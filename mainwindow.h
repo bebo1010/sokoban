@@ -18,9 +18,6 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 private:
-    Ui::MainWindow *ui;
-    QLabel *Wall;
-    QPixmap *wall;
 };
 
 #endif // MAINWINDOW_H
