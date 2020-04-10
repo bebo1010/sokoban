@@ -1,4 +1,4 @@
-#include "level_2.h"
+#include "../headers/level_2.h"
 
 level_2::level_2(QObject *parent) : QObject(parent)
 {
