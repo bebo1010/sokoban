@@ -6,6 +6,7 @@
 #include <QKeyEvent>
 #include <QPixmap>
 #include <QObject>
+#include <QPainter>
 
 namespace Ui {
 class MainWindow;
@@ -17,7 +18,11 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+protected:
+    void paintEvent(QPaintEvent *event);
 private:
+    Ui::MainWindow *ui;
+
 };
 
 #endif // MAINWINDOW_H
