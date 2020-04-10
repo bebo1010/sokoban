@@ -13,5 +13,11 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
-
-
+void MainWindow::paintEvent(QPaintEvent *event){
+    QPainter painter(this);
+    for(int i = 51 ; i < 507 ; i = i + 51){
+        painter.drawLine(i , 0 , i , 507);
+        painter.drawLine(0 , i , 507 , i);
+    }
+    return;
+}
