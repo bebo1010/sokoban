@@ -52,6 +52,12 @@ void MainWindow::keyPressEvent(QKeyEvent* key){
         }
         for(int a = 0;a < idx_box;a++){
             if(player_facing->y()-50==Box[a]->y()&&player_facing->x()==Box[a]->x()){
+                for(int c = 0;c < idx_box;c++){
+                    if(Box[a]->x()==Box[c]->x()&&Box[a]->y()-50==Box[c]->y()){
+                        box_movable=false;
+                        movable=false;
+                }
+                }
                 for(int b = 0;b < idx_wall;b++){
                     if(Box[a]->x()==Wall[b]->x()&&Box[a]->y()-50==Wall[b]->y()){
                         movable = false;
@@ -78,6 +84,12 @@ void MainWindow::keyPressEvent(QKeyEvent* key){
         }
         for(int a = 0;a < idx_box;a++){
             if(player_facing->y()+50==Box[a]->y()&&player_facing->x()==Box[a]->x()){
+                for(int c = 0;c < idx_box;c++){
+                    if(Box[a]->x()==Box[c]->x()&&Box[a]->y()+50==Box[c]->y()){
+                        box_movable=false;
+                        movable=false;
+                }
+                }
                 for(int b = 0;b < idx_wall;b++){
                     if(Box[a]->x()==Wall[b]->x()&&Box[a]->y()+50==Wall[b]->y()){
                         movable = false;
@@ -106,6 +118,12 @@ void MainWindow::keyPressEvent(QKeyEvent* key){
         }
         for(int a = 0;a < idx_box;a++){
             if(player_facing->x()-50==Box[a]->x()&&player_facing->y()==Box[a]->y()){
+                for(int c = 0;c < idx_box;c++){
+                    if(Box[a]->x()-50==Box[c]->x()&&Box[a]->y()==Box[c]->y()){
+                        box_movable=false;
+                        movable=false;
+                }
+                }
                 for(int b = 0;b < idx_wall;b++){
                     if(Box[a]->x()-50==Wall[b]->x()&&Box[a]->y()==Wall[b]->y()){
                         box_movable =false;
@@ -123,6 +141,7 @@ void MainWindow::keyPressEvent(QKeyEvent* key){
         if(player_facing->x()>=50&&movable)
             player_facing->move(player_facing->x()-50,player_facing->y());
     }
+    //#################RIGHT##############
     if(key->key() == Qt::Key_Right){
         steps++;
         bool box_movable = true;
@@ -136,6 +155,12 @@ void MainWindow::keyPressEvent(QKeyEvent* key){
         for(int a = 0;a < idx_box;a++){
             if(player_facing->x()+50==Box[a]->x()&&player_facing->y()==Box[a]->y()){
                 for(int a = 0;a < idx_box;a++){
+                    for(int c = 0;c < idx_box;c++){
+                        if(Box[a]->x()+50==Box[c]->x()&&Box[a]->y()==Box[c]->y()){
+                            box_movable=false;
+                            movable=false;
+                    }
+                    }
                     for(int b = 0;b < idx_wall;b++){
                         if(Box[a]->x()+50==Wall[b]->x()&&Box[a]->y()==Wall[b]->y()){
                             box_movable = false;
