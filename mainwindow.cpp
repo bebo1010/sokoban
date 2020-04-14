@@ -165,7 +165,7 @@ void MainWindow::keyPressEvent(QKeyEvent* key){
                         if(Box[a]->x()+50==Wall[b]->x()&&Box[a]->y()==Wall[b]->y()){
                             box_movable = false;
                             movable = false;
-                            break;
+
                         }
                     }
                 }
