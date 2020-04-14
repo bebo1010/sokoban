@@ -9,15 +9,16 @@
 #include <QPainter>
 #include <QRectF>
 #include <QPainter>
+#include "level_1.h"
 namespace Ui {
     class MainWindow;
-    class player;
 }
 
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 public:
+    void mapGen();
     explicit MainWindow(QWidget *parent = nullptr);
     void character_turn_back();
     void character_turn_front();
@@ -29,10 +30,36 @@ protected:
     void paintEvent(QPaintEvent *event);
 private:
     Ui::MainWindow *ui;
-    QLabel *Wall;
-    QPixmap *wall;
+     short int const arrdata[10][10]={
+        {0 , 2 , 2 , 2 , 2 , 0 , 0 , 0 , 0 , 0},
+        {0 , 2 , 1 , 1 , 2 , 2 , 2 , 2 , 2 , 0},
+        {0 , 2 , 4 , 1 , 1 , 1 , 4 , 1 , 2 , 0},
+        {0 , 2 , 1 , 3 , 2 , 3 , 1 , 1 , 2 , 0},
+        {2 , 2 , 1 , 2 , 2 , 2 , 1 , 2 , 2 , 0},
+        {2 , 1 , 4 , 3 , 2 , 3 , 1 , 2 , 0 , 0},
+        {2 , 1 , 5 , 1 , 1 , 1 , 4 , 2 , 0 , 0},
+        {2 , 2 , 2 , 2 , 2 , 1 , 1 , 2 , 0 , 0},
+        {0 , 0 , 0 , 0 , 2 , 2 , 2 , 2 , 0 , 0},
+        {0 , 0 , 0 , 0 , 2 , 2 , 2 , 2 , 0 , 0}};
+    QPixmap* ground[100];
+    QPixmap* wall[100];
+    QPixmap* target[100];
+    QPixmap* box[100];
+    QPixmap* player[1];
+
+    QLabel* Ground[100];
+    QLabel* Wall[100];
+    QLabel* Target[100];
+    QLabel* Box[100];
+    QLabel* Player[1];
+    int px;
+    int py;
+    int steps=0;
+
     QLabel *mainplayer;
     QLabel *player_facing;
+    QPixmap *walked;
+    QLabel *Walked;
     QPixmap *front;
     QPixmap *back;
     QPixmap *left;
