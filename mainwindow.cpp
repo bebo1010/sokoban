@@ -2,7 +2,7 @@
 #include "ui_mainwindow.h"
 #include <QVarLengthArray>
 #include <QDebug>
-
+#include<iostream>
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -42,37 +42,59 @@ void MainWindow::keyPressEvent(QKeyEvent* key){
 
     if(key->key() == Qt::Key_Up){
         steps++;
-
+        bool movable = true;
         emit character_turn_back();
-        if(player_facing->y()>=50)
+        for(int a = 0;a < idx_wall;a++){
+            if(player_facing->y()-50==Wall[a]->y()&&player_facing->x()==Wall[a]->x()){
+                movable = false;
+            }
+        }
+        if(player_facing->y()>=50&&movable==true)
             player_facing->move(player_facing->x(),player_facing->y()-50);
     }
     if(key->key() == Qt::Key_Down){
         steps++;
-
+        bool movable = true;
+        for(int a = 0;a < idx_wall;a++){
+            if(player_facing->y()+50==Wall[a]->y()&&player_facing->x()==Wall[a]->x()){
+                movable = false;
+            }
+        }
         emit character_turn_front();
-        if(player_facing->y()<=MainWindow::size().height()-100)
+        if(player_facing->y()<=MainWindow::size().height()-100&&movable)
             player_facing->move(player_facing->x(),player_facing->y()+50);
     }
     if(key->key() == Qt::Key_Left){
         steps++;
+        bool movable = true;
+        for(int a = 0;a < idx_wall;a++){
+            if(player_facing->x()-50==Wall[a]->x()&&player_facing->y()==Wall[a]->y()){
+                movable = false;
+            }
+        }
         emit character_turn_left();
-        if(player_facing->x()>=50)
+        if(player_facing->x()>=50&&movable)
             player_facing->move(player_facing->x()-50,player_facing->y());
     }
     if(key->key() == Qt::Key_Right){
         steps++;
+        bool movable = true;
+        for(int a = 0;a < idx_wall;a++){
+            if(player_facing->x()+50==Wall[a]->x()&&player_facing->y()==Wall[a]->y()){
+                movable = false;
+            }
+        }
         emit character_turn_right();
-        if(player_facing->x()<=MainWindow::size().width()-100)
-        player_facing->move(player_facing->x()+50,player_facing->y());
+        if(player_facing->x()<=MainWindow::size().width()-100&&movable)
+            player_facing->move(player_facing->x()+50,player_facing->y());
     }
 }
 void MainWindow::mapGen(){
 
-    int idx_ground = 0;
-    int idx_wall = 0;
-    int idx_target = 0;
-    int idx_box = 0;
+    idx_ground = 0;
+    idx_wall = 0;
+    idx_target = 0;
+    idx_box = 0;
 
     for(int x = 0; x<10;x++){
         for(int y =0;y<10;y++){
@@ -84,6 +106,7 @@ void MainWindow::mapGen(){
                     Ground[idx_ground] -> setPixmap(*ground[idx_ground]);
                     Ground[idx_ground] -> setScaledContents(true);
                     Ground[idx_ground] -> setGeometry(50*x,50*y,50,50);
+                    idx_ground++;
                     break;
                 case 2:
                     wall[idx_wall] = new QPixmap(":/res/brick.jpg");
@@ -91,6 +114,7 @@ void MainWindow::mapGen(){
                     Wall[idx_wall] -> setPixmap(*wall[idx_wall]);
                     Wall[idx_wall] -> setScaledContents(true);
                     Wall[idx_wall] -> setGeometry(50*x,50*y,50,50);
+                    idx_wall++;
                     break;
                 case 3:
                     target[idx_target] = new QPixmap(":/res/target_ground.jpg");
@@ -98,6 +122,7 @@ void MainWindow::mapGen(){
                     Target[idx_target] -> setPixmap(*target[idx_target]);
                     Target[idx_target] -> setScaledContents(true);
                     Target[idx_target] -> setGeometry(50*x,50*y,50,50);
+                    idx_target++;
                     break;
                 case 4:
                     box[idx_box] = new QPixmap(":/res/wooden_box.png");
@@ -105,6 +130,7 @@ void MainWindow::mapGen(){
                     Box[idx_box] -> setPixmap(*box[idx_box]);
                     Box[idx_box] -> setScaledContents(true);
                     Box[idx_box] -> setGeometry(50*x,50*y,50,50);
+                    idx_box++;
                     break;
                 case 5:
                     px=x;

@@ -55,7 +55,10 @@ private:
     int px;
     int py;
     int steps=0;
-
+    int idx_ground;
+    int idx_wall;
+    int idx_target;
+    int idx_box;
     QLabel *mainplayer;
     QLabel *player_facing;
     QPixmap *walked;
