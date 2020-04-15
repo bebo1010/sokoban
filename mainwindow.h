@@ -18,19 +18,39 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 public:
-    void mapGen();
+    void mapGen(short int const arr[10][10]);
+    void init(short int const lvl[10][10]);
     explicit MainWindow(QWidget *parent = nullptr);
     void character_turn_back();
     void character_turn_front();
     void character_turn_left();
     void character_turn_right();
     void drawBackground(QPainter *painter, const QRectF &rect);
+
+    void checkWin();
+    void checkDead();
+
+    void clear_map();
+    void close();
+
     ~MainWindow();
 protected:
     void paintEvent(QPaintEvent *event);
 private:
     Ui::MainWindow *ui;
-     short int const arrdata[10][10]={
+    short int const arrdata2[10][10] = {
+        {2 , 2 , 2 , 2 , 2 , 2 , 0 , 0 , 0 ,0},
+        {2 , 1 , 1 , 1 , 1 , 2 , 2 , 0 , 0 ,0},
+        {2 , 3 , 4 , 4 , 3 , 1 , 2 , 2 , 0 ,0},
+        {2 , 1 , 3 , 4 , 4 , 3 , 1 , 2 , 2 ,0},
+        {2 , 2 , 1 , 3 , 4 , 4 , 3 , 1 , 2 ,0},
+        {0 , 2 , 2 , 1 , 3 , 4 , 4 , 3 , 2 ,0},
+        {0 , 0 , 2 , 2 , 1 , 5 , 1 , 1 , 2 ,0},
+        {0 , 0 , 0 , 2 , 2 , 2 , 2 , 2 , 2 ,0},
+        {0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,0},
+        {0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,0}
+                                        };
+     short int const arrdata1[10][10]={
         {0 , 2 , 2 , 2 , 2 , 0 , 0 , 0 , 0 , 0},
         {0 , 2 , 1 , 1 , 2 , 2 , 2 , 2 , 2 , 0},
         {0 , 2 , 4 , 1 , 1 , 1 , 4 , 1 , 2 , 0},
@@ -41,6 +61,19 @@ private:
         {2 , 2 , 2 , 2 , 2 , 1 , 1 , 2 , 0 , 0},
         {0 , 0 , 0 , 0 , 2 , 2 , 2 , 2 , 0 , 0},
         {0 , 0 , 0 , 0 , 2 , 2 , 2 , 2 , 0 , 0}};
+
+     short int const arrdata[10][10]={
+        {0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0},
+        {0 , 0 , 1 , 1 , 0 , 0 , 0 , 0 , 0 , 0},
+        {0 , 0 , 4 , 1 , 1 , 1 , 4 , 1 , 0 , 0},
+        {0 , 0 , 1 , 3 , 0 , 3 , 1 , 1 , 0 , 0},
+        {0 , 0 , 1 , 0 , 0 , 0 , 1 , 0 , 0 , 0},
+        {0 , 1 , 4 , 3 , 0 , 3 , 1 , 0 , 0 , 0},
+        {0 , 1 , 5 , 1 , 1 , 1 , 4 , 0 , 0 , 0},
+        {0 , 0 , 0 , 0 , 0 , 1 , 1 , 0 , 0 , 0},
+        {0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0},
+        {0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0}};
+
     QPixmap* ground[100];
     QPixmap* wall[100];
     QPixmap* target[100];
@@ -52,6 +85,7 @@ private:
     QLabel* Target[100];
     QLabel* Box[100];
     QLabel* Player[1];
+
     int px;
     int py;
     int steps=0;
@@ -59,6 +93,7 @@ private:
     int idx_wall;
     int idx_target;
     int idx_box;
+
     QLabel *mainplayer;
     QLabel *player_facing;
     QPixmap *walked;
