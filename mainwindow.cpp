@@ -242,11 +242,6 @@ void MainWindow::checkWin(){
 
         mapGen(arrdata2);
 
-        walked = new QPixmap(":/res/stone_ground.jpg");
-        Walked = new QLabel(this);
-        Walked -> setPixmap(*walked);
-        Walked -> setScaledContents(true);
-        Walked -> setGeometry(50*px,50*py,50,50);
         Walked -> raise();
         Walked -> showNormal();
         player_facing->showNormal();
