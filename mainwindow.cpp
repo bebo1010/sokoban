@@ -3,19 +3,24 @@
 #include <QVarLengthArray>
 #include <QDebug>
 #include<iostream>
+#include<QLayoutItem>
+#include<QFlags>
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    init(arrdata);
 
+}
+void MainWindow::init(short int const arr[10][10]){
     //Pixmap Pathes
     front = new QPixmap(":/res/main_character(front).png");
     back = new QPixmap(":/res/main_character(back).png");
     left = new QPixmap(":/res/main_character(left).png");
     right = new QPixmap(":/res/main_character(right).png");
 
-    mapGen();
+    mapGen(arr);
     walked = new QPixmap(":/res/stone_ground.jpg");
     Walked = new QLabel(this);
     Walked -> setPixmap(*walked);
@@ -26,10 +31,7 @@ MainWindow::MainWindow(QWidget *parent) :
     player_facing->setGeometry(50*px,50*py,50,50);
     player_facing->setPixmap(*front);
     player_facing->setScaledContents(true);
-
-
 }
-
 void MainWindow::paintEvent(QPaintEvent *event){
     QPainter painter(this);
     for(int i = 50 ; i < 500 ; i = i + 50){
@@ -56,7 +58,7 @@ void MainWindow::keyPressEvent(QKeyEvent* key){
                     if(Box[a]->x()==Box[c]->x()&&Box[a]->y()-50==Box[c]->y()){
                         box_movable=false;
                         movable=false;
-                }
+                    }
                 }
                 for(int b = 0;b < idx_wall;b++){
                     if(Box[a]->x()==Wall[b]->x()&&Box[a]->y()-50==Wall[b]->y()){
@@ -90,7 +92,7 @@ void MainWindow::keyPressEvent(QKeyEvent* key){
                     if(Box[a]->x()==Box[c]->x()&&Box[a]->y()+50==Box[c]->y()){
                         box_movable=false;
                         movable=false;
-                }
+                    }
                 }
                 for(int b = 0;b < idx_wall;b++){
                     if(Box[a]->x()==Wall[b]->x()&&Box[a]->y()+50==Wall[b]->y()){
@@ -126,7 +128,7 @@ void MainWindow::keyPressEvent(QKeyEvent* key){
                     if(Box[a]->x()-50==Box[c]->x()&&Box[a]->y()==Box[c]->y()){
                         box_movable=false;
                         movable=false;
-                }
+                    }
                 }
                 for(int b = 0;b < idx_wall;b++){
                     if(Box[a]->x()-50==Wall[b]->x()&&Box[a]->y()==Wall[b]->y()){
@@ -164,31 +166,31 @@ void MainWindow::keyPressEvent(QKeyEvent* key){
         for(int a = 0;a < idx_box;a++){
             if(player_facing->x()+50==Box[a]->x()&&player_facing->y()==Box[a]->y()){
 
-                    for(int c = 0;c < idx_box;c++){
-                        if(Box[a]->x()+50==Box[c]->x()&&Box[a]->y()==Box[c]->y()){
-                            box_movable=false;
-                            movable=false;
-                            //QMessageBox msg;
-                            //QString box1_x = QString::fromStdString(std::to_string(Box[a]->x()));
-                            //QString box2_x = QString::fromStdString(std::to_string(Box[c]->x()));
-                            //msg.setText(box1_x+" "+box2_x);
-                            //msg.exec();
-                        }
+                for(int c = 0;c < idx_box;c++){
+                    if(Box[a]->x()+50==Box[c]->x()&&Box[a]->y()==Box[c]->y()){
+                        box_movable=false;
+                        movable=false;
+                        //QMessageBox msg;
+                        //QString box1_x = QString::fromStdString(std::to_string(Box[a]->x()));
+                        //QString box2_x = QString::fromStdString(std::to_string(Box[c]->x()));
+                        //msg.setText(box1_x+" "+box2_x);
+                        //msg.exec();
+                    }
 
                 }
 
-                    for(int b = 0;b < idx_wall;b++){
-                        if(Box[a]->x()+50==Wall[b]->x()&&Box[a]->y()==Wall[b]->y()){
-                            box_movable=false;
-                            movable=false;
-                            //QMessageBox msg;
-                            //QString box1_x = QString::fromStdString(std::to_string(Box[a]->x()));
-                            //QString wall_x = QString::fromStdString(std::to_string(Wall[b]->x()));
-                            //msg.setText(box1_x+" "+wall_x);
-                            //msg.exec();
+                for(int b = 0;b < idx_wall;b++){
+                    if(Box[a]->x()+50==Wall[b]->x()&&Box[a]->y()==Wall[b]->y()){
+                        box_movable=false;
+                        movable=false;
+                        //QMessageBox msg;
+                        //QString box1_x = QString::fromStdString(std::to_string(Box[a]->x()));
+                        //QString wall_x = QString::fromStdString(std::to_string(Wall[b]->x()));
+                        //msg.setText(box1_x+" "+wall_x);
+                        //msg.exec();
 
-                        }
                     }
+                }
 
 
             }
@@ -205,7 +207,22 @@ void MainWindow::keyPressEvent(QKeyEvent* key){
 
     }
 }
+void MainWindow::clear_map(){
 
+    for(int i = 0;i<idx_box;i++){
+        delete Box[i];
+    }
+    for(int i = 0;i<idx_ground;i++){
+        delete Ground[i];
+    }
+    for(int i = 0;i<idx_target;i++){
+        delete Target[i];
+    }
+    for(int i = 0;i<idx_wall;i++){
+        delete Wall[i];
+    }
+
+}
 void MainWindow::checkWin(){
     int win=0;
     for(int i = 0; i<idx_target;i++){
@@ -220,13 +237,27 @@ void MainWindow::checkWin(){
         QString steps_str = QString::fromStdString(std::to_string(steps));
         msg.setText("you win!!!!!!\nUsed Steps: "+steps_str+"\n");
         msg.exec();
+        msg.close();
+        clear_map();
+
+        mapGen(arrdata2);
+
+        walked = new QPixmap(":/res/stone_ground.jpg");
+        Walked = new QLabel(this);
+        Walked -> setPixmap(*walked);
+        Walked -> setScaledContents(true);
+        Walked -> setGeometry(50*px,50*py,50,50);
+        Walked -> raise();
+        Walked -> showNormal();
+        player_facing->showNormal();
+        player_facing->raise();
     }
 }
 
 void MainWindow::checkDead(){
 
 }
-void MainWindow::mapGen(){
+void MainWindow::mapGen(short int const lvl[10][10]){
 
     idx_ground = 0;
     idx_wall = 0;
@@ -236,53 +267,64 @@ void MainWindow::mapGen(){
     for(int x = 0; x<10;x++){
         for(int y =0;y<10;y++){
 
-            switch(arrdata[x][y]){
-                case 1:
-                    ground[idx_ground] = new QPixmap(":/res/stone_ground.jpg");
-                    Ground[idx_ground] = new QLabel(this);
-                    Ground[idx_ground] -> setPixmap(*ground[idx_ground]);
-                    Ground[idx_ground] -> setScaledContents(true);
-                    Ground[idx_ground] -> setGeometry(50*x,50*y,50,50);
-                    idx_ground++;
-                    break;
-                case 2:
-                    wall[idx_wall] = new QPixmap(":/res/brick.jpg");
-                    Wall[idx_wall] = new QLabel(this);
-                    Wall[idx_wall] -> setPixmap(*wall[idx_wall]);
-                    Wall[idx_wall] -> setScaledContents(true);
-                    Wall[idx_wall] -> setGeometry(50*x,50*y,50,50);
-                    idx_wall++;
-                    break;
-                case 3:
-                    target[idx_target] = new QPixmap(":/res/target_ground.jpg");
-                    Target[idx_target] = new QLabel(this);
-                    Target[idx_target] -> setPixmap(*target[idx_target]);
-                    Target[idx_target] -> setScaledContents(true);
-                    Target[idx_target] -> setGeometry(50*x,50*y,50,50);
-                    idx_target++;
-                    break;
-                case 4:
-                    ground[idx_ground] = new QPixmap(":/res/stone_ground.jpg");
-                    Ground[idx_ground] = new QLabel(this);
-                    Ground[idx_ground] -> setPixmap(*ground[idx_ground]);
-                    Ground[idx_ground] -> setScaledContents(true);
-                    Ground[idx_ground] -> setGeometry(50*x,50*y,50,50);
-                    idx_ground++;
-                    box[idx_box] = new QPixmap(":/res/wooden_box.png");
-                    Box[idx_box] = new QLabel(this);
-                    Box[idx_box] -> setPixmap(*box[idx_box]);
-                    Box[idx_box] -> setScaledContents(true);
-                    Box[idx_box] -> setGeometry(50*x,50*y,50,50);
-                    idx_box++;
-                    break;
-                case 5:
-                    px=x;
-                    py=y;
-                    break;
-                default:
-                    break;
+            switch(lvl[x][y]){
+            case 1:
+
+                ground[idx_ground] = new QPixmap(":/res/stone_ground.jpg");
+                Ground[idx_ground] = new QLabel(this);
+                Ground[idx_ground] -> setPixmap(*ground[idx_ground]);
+                Ground[idx_ground] -> setScaledContents(true);
+                Ground[idx_ground] -> setGeometry(50*x,50*y,50,50);
+                Ground[idx_ground]->raise();
+                Ground[idx_ground]->showNormal();
+                idx_ground++;
+                break;
+            case 2:
+
+                wall[idx_wall] = new QPixmap(":/res/brick.jpg");
+                Wall[idx_wall] = new QLabel(this);
+                Wall[idx_wall] -> setPixmap(*wall[idx_wall]);
+                Wall[idx_wall] -> setScaledContents(true);
+                Wall[idx_wall] -> setGeometry(50*x,50*y,50,50);
+                Wall[idx_wall] -> showNormal();
+                idx_wall++;
+                break;
+            case 3:
+                target[idx_target] = new QPixmap(":/res/target_ground.jpg");
+                Target[idx_target] = new QLabel(this);
+                Target[idx_target] -> setPixmap(*target[idx_target]);
+                Target[idx_target] -> setScaledContents(true);
+                Target[idx_target] -> setGeometry(50*x,50*y,50,50);
+                Target[idx_target]->showNormal();
+                idx_target++;
+                break;
+            case 4:
+
+                ground[idx_ground] = new QPixmap(":/res/stone_ground.jpg");
+                Ground[idx_ground] = new QLabel(this);
+                Ground[idx_ground] -> setPixmap(*ground[idx_ground]);
+                Ground[idx_ground] -> setScaledContents(true);
+                Ground[idx_ground] -> setGeometry(50*x,50*y,50,50);
+                Ground[idx_ground]->showNormal();
+                idx_ground++;
+
+                box[idx_box] = new QPixmap(":/res/wooden_box.png");
+                Box[idx_box] = new QLabel(this);
+                Box[idx_box] -> setPixmap(*box[idx_box]);
+                Box[idx_box] -> setScaledContents(true);
+                Box[idx_box] -> setGeometry(50*x,50*y,50,50);
+                Box[idx_box]->showNormal();
+                idx_box++;
+                break;
+            case 5:
+                px=x;
+                py=y;
+                break;
+            default:
+                break;
             }
         }
+
     }
 
 }
