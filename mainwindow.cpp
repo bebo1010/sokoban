@@ -39,7 +39,7 @@ void MainWindow::paintEvent(QPaintEvent *event){
     return;
 }
 void MainWindow::keyPressEvent(QKeyEvent* key){
-
+    //#############UP##################
     if(key->key() == Qt::Key_Up){
         steps++;
         bool movable = true;
@@ -70,9 +70,11 @@ void MainWindow::keyPressEvent(QKeyEvent* key){
                 Box[a]->move(Box[a]->x(),Box[a]->y()-50);
             }
         }
+        checkWin();
         if(player_facing->y()>=50&&movable)
             player_facing->move(player_facing->x(),player_facing->y()-50);
     }
+    //###########DOWN############
     if(key->key() == Qt::Key_Down){
         steps++;
         bool movable = true;
@@ -103,10 +105,12 @@ void MainWindow::keyPressEvent(QKeyEvent* key){
                 Box[a]->move(Box[a]->x(),Box[a]->y()+50);
             }
         }
+        checkWin();
         emit character_turn_front();
         if(player_facing->y()<=MainWindow::size().height()-100&&movable)
             player_facing->move(player_facing->x(),player_facing->y()+50);
     }
+    //##################LEFT#############
     if(key->key() == Qt::Key_Left){
         steps++;
         bool box_movable = true;
@@ -136,6 +140,7 @@ void MainWindow::keyPressEvent(QKeyEvent* key){
                 Box[a]->move(Box[a]->x()-50,Box[a]->y());
             }
         }
+        checkWin();
         emit character_turn_left();
         if(player_facing->x()>=50&&movable)
             player_facing->move(player_facing->x()-50,player_facing->y());
@@ -159,7 +164,7 @@ void MainWindow::keyPressEvent(QKeyEvent* key){
         for(int a = 0;a < idx_box;a++){
             if(player_facing->x()+50==Box[a]->x()&&player_facing->y()==Box[a]->y()){
 
-                    for(int c = a;c < idx_box;c++){
+                    for(int c = 0;c < idx_box;c++){
                         if(Box[a]->x()+50==Box[c]->x()&&Box[a]->y()==Box[c]->y()){
                             box_movable=false;
                             movable=false;
@@ -192,12 +197,34 @@ void MainWindow::keyPressEvent(QKeyEvent* key){
                 Box[a]->move(Box[a]->x()+50,Box[a]->y());
             }
         }
+        checkWin();
         emit character_turn_right();
         if(player_facing->x()<=MainWindow::size().width()-100&&movable){
             player_facing->move(player_facing->x()+50,player_facing->y());
         }
 
     }
+}
+
+void MainWindow::checkWin(){
+    int win=0;
+    for(int i = 0; i<idx_target;i++){
+        for(int j = 0; j<idx_box;j++){
+            if(Target[i]->x()==Box[j]->x()&&Target[i]->y()==Box[j]->y()){
+                win++;
+            }
+        }
+    }
+    if(win>=idx_target){
+        QMessageBox msg;
+        QString steps_str = QString::fromStdString(std::to_string(steps));
+        msg.setText("you win!!!!!!\nUsed Steps: "+steps_str+"\n");
+        msg.exec();
+    }
+}
+
+void MainWindow::checkDead(){
+
 }
 void MainWindow::mapGen(){
 
