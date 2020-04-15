@@ -132,7 +132,6 @@ void MainWindow::keyPressEvent(QKeyEvent* key){
                 }
             }
             if(player_facing->x()-50==Box[a]->x()&&player_facing->y()==Box[a]->y()&&box_movable){
-
                 Box[a]->raise();
                 Box[a]->move(Box[a]->x()-50,Box[a]->y());
             }
@@ -149,26 +148,44 @@ void MainWindow::keyPressEvent(QKeyEvent* key){
         for(int a = 0;a < idx_wall;a++){
             if(player_facing->x()+50==Wall[a]->x()&&player_facing->y()==Wall[a]->y()){
                 movable = false;
+                //QMessageBox msg;
+                //QString box1_x = QString::fromStdString(std::to_string(player_facing->x()));
+                //QString box2_x = QString::fromStdString(std::to_string(Wall[a]->x()));
+                //msg.setText(box1_x+" "+box2_x);
+                //msg.exec();
             }
         }
 
         for(int a = 0;a < idx_box;a++){
             if(player_facing->x()+50==Box[a]->x()&&player_facing->y()==Box[a]->y()){
-                for(int a = 0;a < idx_box;a++){
-                    for(int c = 0;c < idx_box;c++){
+
+                    for(int c = a;c < idx_box;c++){
                         if(Box[a]->x()+50==Box[c]->x()&&Box[a]->y()==Box[c]->y()){
                             box_movable=false;
                             movable=false;
-                    }
-                    }
+                            //QMessageBox msg;
+                            //QString box1_x = QString::fromStdString(std::to_string(Box[a]->x()));
+                            //QString box2_x = QString::fromStdString(std::to_string(Box[c]->x()));
+                            //msg.setText(box1_x+" "+box2_x);
+                            //msg.exec();
+                        }
+
+                }
+
                     for(int b = 0;b < idx_wall;b++){
                         if(Box[a]->x()+50==Wall[b]->x()&&Box[a]->y()==Wall[b]->y()){
-                            box_movable = false;
-                            movable = false;
+                            box_movable=false;
+                            movable=false;
+                            //QMessageBox msg;
+                            //QString box1_x = QString::fromStdString(std::to_string(Box[a]->x()));
+                            //QString wall_x = QString::fromStdString(std::to_string(Wall[b]->x()));
+                            //msg.setText(box1_x+" "+wall_x);
+                            //msg.exec();
 
                         }
                     }
-                }
+
+
             }
             if(player_facing->x()+50==Box[a]->x()&&player_facing->y()==Box[a]->y()&&box_movable){
                 Box[a]->raise();
