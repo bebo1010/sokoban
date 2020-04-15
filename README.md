@@ -21,3 +21,5 @@ box : 4
 
 player : 5
 
+player + target : 6  
+box + target : 7
