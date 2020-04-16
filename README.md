@@ -19,7 +19,8 @@ target : 3
 
 box : 4
 
-player : 5
+player:   5
 
-player + target : 6  
-box + target : 7
+player  +  target :  6  
+
+box   +   target :  7
