@@ -224,7 +224,7 @@ void MainWindow::clear_map(){
 
 }
 void MainWindow::checkWin(){
-    int win=0;
+
     for(int i = 0; i<idx_target;i++){
         for(int j = 0; j<idx_box;j++){
             if(Target[i]->x()==Box[j]->x()&&Target[i]->y()==Box[j]->y()){
@@ -294,7 +294,6 @@ void MainWindow::mapGen(short int const lvl[10][10]){
                 idx_target++;
                 break;
             case 4:
-
                 ground[idx_ground] = new QPixmap(":/res/stone_ground.jpg");
                 Ground[idx_ground] = new QLabel(this);
                 Ground[idx_ground] -> setPixmap(*ground[idx_ground]);
@@ -315,6 +314,34 @@ void MainWindow::mapGen(short int const lvl[10][10]){
                 px=x;
                 py=y;
                 break;
+            case 6:
+                px=x;
+                py=y;
+                target[idx_target] = new QPixmap(":/res/target_ground.jpg");
+                Target[idx_target] = new QLabel(this);
+                Target[idx_target] -> setPixmap(*target[idx_target]);
+                Target[idx_target] -> setScaledContents(true);
+                Target[idx_target] -> setGeometry(50*x,50*y,50,50);
+                Target[idx_target]->showNormal();
+                idx_target++;
+                break;
+            case 7:
+                win++;
+                target[idx_target] = new QPixmap(":/res/target_ground.jpg");
+                Target[idx_target] = new QLabel(this);
+                Target[idx_target] -> setPixmap(*target[idx_target]);
+                Target[idx_target] -> setScaledContents(true);
+                Target[idx_target] -> setGeometry(50*x,50*y,50,50);
+                Target[idx_target]->showNormal();
+                idx_target++;
+
+                box[idx_box] = new QPixmap(":/res/wooden_box.png");
+                Box[idx_box] = new QLabel(this);
+                Box[idx_box] -> setPixmap(*box[idx_box]);
+                Box[idx_box] -> setScaledContents(true);
+                Box[idx_box] -> setGeometry(50*x,50*y,50,50);
+                Box[idx_box]->showNormal();
+                idx_box++;
             default:
                 break;
             }

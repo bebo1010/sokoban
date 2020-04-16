@@ -37,6 +37,7 @@ public:
 protected:
     void paintEvent(QPaintEvent *event);
 private:
+    int win=0;
     Ui::MainWindow *ui;
     short int const arrdata2[10][10] = {
         {2 , 2 , 2 , 2 , 2 , 2 , 0 , 0 , 0 ,0},
