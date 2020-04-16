@@ -10,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    init(arrdata);
+    init(arrdata2);
 
 }
 void MainWindow::init(short int const arr[10][10]){
@@ -224,7 +224,7 @@ void MainWindow::clear_map(){
 
 }
 void MainWindow::checkWin(){
-
+    win = 0;
     for(int i = 0; i<idx_target;i++){
         for(int j = 0; j<idx_box;j++){
             if(Target[i]->x()==Box[j]->x()&&Target[i]->y()==Box[j]->y()){
@@ -232,7 +232,7 @@ void MainWindow::checkWin(){
             }
         }
     }
-    if(win>=idx_target){
+    if(win==idx_target){
         QMessageBox msg;
         QString steps_str = QString::fromStdString(std::to_string(steps));
         msg.setText("you win!!!!!!\nUsed Steps: "+steps_str+"\n");
@@ -240,7 +240,7 @@ void MainWindow::checkWin(){
         msg.close();
         clear_map();
 
-        mapGen(arrdata2);
+        init(arrdata2);
 
         Walked -> raise();
         Walked -> showNormal();
@@ -326,7 +326,7 @@ void MainWindow::mapGen(short int const lvl[10][10]){
                 idx_target++;
                 break;
             case 7:
-                win++;
+                checkWin();
                 target[idx_target] = new QPixmap(":/res/target_ground.jpg");
                 Target[idx_target] = new QLabel(this);
                 Target[idx_target] -> setPixmap(*target[idx_target]);
