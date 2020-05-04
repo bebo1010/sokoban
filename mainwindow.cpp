@@ -3,107 +3,73 @@
 #include <QVarLengthArray>
 #include <QDebug>
 #include<iostream>
-
-MainWindow::MainWindow(QWidget *parent ,  bool startup_flag) :
+#include<QLayoutItem>
+#include<QFlags>
+MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow) {
+    ui(new Ui::MainWindow)
+{
     ui->setupUi(this);
-    setWindowTitle("Sokoban");
+    init(arrdata1);
+
+}
+void MainWindow::init(short int const arr[10][10]){
     //Pixmap Pathes
     front = new QPixmap(":/res/main_character(front).png");
     back = new QPixmap(":/res/main_character(back).png");
     left = new QPixmap(":/res/main_character(left).png");
     right = new QPixmap(":/res/main_character(right).png");
-    if(startup_flag == 0)
-        mainmenu();
 
-    /*walked = new QPixmap(":/res/stone_ground.jpg");
-    Walked = setLabel(Walked);
+    mapGen(arr);
+    walked = new QPixmap(":/res/stone_ground.jpg");
+    Walked = new QLabel(this);
     Walked -> setPixmap(*walked);
     Walked -> setScaledContents(true);
     Walked -> setGeometry(50*px,50*py,50,50);
     //Character Object
-    player_facing = setLabel(player_facing);
+    player_facing = new QLabel(this);
     player_facing->setGeometry(50*px,50*py,50,50);
     player_facing->setPixmap(*front);
-    player_facing->setScaledContents(true);*/
-
-
+    player_facing->setScaledContents(true);
 }
-
-void MainWindow::mainmenu() {
-
-    mainmenu_image = new QPixmap(":/res/background.jpg");
-    mainmenu_BG = new QLabel(this);
-    mainmenu_BG->setPixmap(*mainmenu_image);
-    mainmenu_BG->setGeometry(0,0,500,500);
-    mainmenu_BG->setScaledContents(true);
-
-    Start_btn = new QPushButton("Start", this);
-    Start_btn->raise();
-    Start_btn->setFont(QFont("Courier New", 14, QFont::Bold));
-    Start_btn->setGeometry(10,30,100,150);
-    connect(Start_btn, SIGNAL(clicked()), &lvl1, SLOT(mapGen()));
-
-    Exit_btn = new QPushButton("Quit", this);
-    Exit_btn->raise();
-    Exit_btn->setFont(QFont("Courier New", 14, QFont::Bold));
-    Exit_btn->setGeometry(10,200,100,150);
-    connect(Exit_btn, SIGNAL(clicked()), this, SLOT(quit()));
-    Exit_btn->show();
-}
-
-void MainWindow::hide_menu(){
-    mainmenu_BG -> hide();
-    Start_btn -> hide();
-    Exit_btn -> hide();
-}
-void MainWindow::quit() {
-    exit(0);
-}
-QLabel * MainWindow::setLabel(QLabel *label) {
-    label = new QLabel(this);
-    return label;
-}
-
-/*void MainWindow::paintEvent(QPaintEvent *event){
+void MainWindow::paintEvent(QPaintEvent *event){
     QPainter painter(this);
     for(int i = 50 ; i < 500 ; i = i + 50){
         painter.drawLine(i , 0 , i , 500);
         painter.drawLine(0 , i , 500 , i);
     }
     return;
-}*/
-void MainWindow::keyPressEvent(QKeyEvent* key) {
+}
+void MainWindow::keyPressEvent(QKeyEvent* key){
     //#############UP##################
-    if(key->key() == Qt::Key_Up) {
+    if(key->key() == Qt::Key_Up){
         steps++;
         bool movable = true;
         bool box_movable = true;
         emit character_turn_back();
-        for(int i = 0; i < idx_wall; i++) {
-            if(player_facing->y()-50==Wall[i]->y()&&player_facing->x()==Wall[i]->x()) {
-                movable = false; //to prevent character from walking into the wall
+        for(int a = 0;a < idx_wall;a++){
+            if(player_facing->y()-50==Wall[a]->y()&&player_facing->x()==Wall[a]->x()){
+                movable = false;
             }
         }
-        for(int i = 0; i < idx_box; i++) {
-            if(player_facing->y()-50==Box[i]->y()&&player_facing->x()==Box[i]->x()) {
-                for(int j = 0; j < idx_box; j++) {
-                    if(Box[i]->x()==Box[j]->x()&&Box[i]->y()-50==Box[j]->y()) {
+        for(int a = 0;a < idx_box;a++){
+            if(player_facing->y()-50==Box[a]->y()&&player_facing->x()==Box[a]->x()){
+                for(int c = 0;c < idx_box;c++){
+                    if(Box[a]->x()==Box[c]->x()&&Box[a]->y()-50==Box[c]->y()){
                         box_movable=false;
                         movable=false;
                     }
                 }
-                for(int j = 0; j < idx_wall; j++) {
-                    if(Box[i]->x()==Wall[j]->x()&&Box[i]->y()-50==Wall[j]->y()) {
+                for(int b = 0;b < idx_wall;b++){
+                    if(Box[a]->x()==Wall[b]->x()&&Box[a]->y()-50==Wall[b]->y()){
                         movable = false;
                         box_movable = false;
                     }
                 }
             }
-            if(player_facing->y()-50==Box[i]->y()&&player_facing->x()==Box[i]->x()&&box_movable) {
-                Box[i]->raise();
-                Box[i]->move(Box[i]->x(),Box[i]->y()-50);
+            if(player_facing->y()-50==Box[a]->y()&&player_facing->x()==Box[a]->x()&&box_movable){
+                Box[a]->raise();
+                Box[a]->move(Box[a]->x(),Box[a]->y()-50);
             }
         }
         checkWin();
@@ -111,34 +77,34 @@ void MainWindow::keyPressEvent(QKeyEvent* key) {
             player_facing->move(player_facing->x(),player_facing->y()-50);
     }
     //###########DOWN############
-    if(key->key() == Qt::Key_Down) {
+    if(key->key() == Qt::Key_Down){
         steps++;
         bool movable = true;
         bool box_movable = true;
-        for(int i = 0; i < idx_wall; i++) {
-            if(player_facing->y()+50==Wall[i]->y()&&player_facing->x()==Wall[i]->x()) {
-                movable = false; //to prevent character from walking into the wall
+        for(int a = 0;a < idx_wall;a++){
+            if(player_facing->y()+50==Wall[a]->y()&&player_facing->x()==Wall[a]->x()){
+                movable = false;
             }
         }
-        for(int i = 0; i < idx_box; i++) {
-            if(player_facing->y()+50==Box[i]->y()&&player_facing->x()==Box[i]->x()) {
-                for(int j = 0; j < idx_box; j++) {
-                    if(Box[i]->x()==Box[j]->x()&&Box[i]->y()+50==Box[j]->y()) {
+        for(int a = 0;a < idx_box;a++){
+            if(player_facing->y()+50==Box[a]->y()&&player_facing->x()==Box[a]->x()){
+                for(int c = 0;c < idx_box;c++){
+                    if(Box[a]->x()==Box[c]->x()&&Box[a]->y()+50==Box[c]->y()){
                         box_movable=false;
                         movable=false;
                     }
                 }
-                for(int j = 0; j < idx_wall; j++) {
-                    if(Box[i]->x()==Wall[j]->x()&&Box[i]->y()+50==Wall[j]->y()) {
+                for(int b = 0;b < idx_wall;b++){
+                    if(Box[a]->x()==Wall[b]->x()&&Box[a]->y()+50==Wall[b]->y()){
                         movable = false;
                         box_movable = false;
                     }
                 }
             }
-            if(player_facing->y()+50==Box[i]->y()&&player_facing->x()==Box[i]->x()&&box_movable) {
+            if(player_facing->y()+50==Box[a]->y()&&player_facing->x()==Box[a]->x()&&box_movable){
 
-                Box[i]->raise();
-                Box[i]->move(Box[i]->x(),Box[i]->y()+50);
+                Box[a]->raise();
+                Box[a]->move(Box[a]->x(),Box[a]->y()+50);
             }
         }
         checkWin();
@@ -147,33 +113,33 @@ void MainWindow::keyPressEvent(QKeyEvent* key) {
             player_facing->move(player_facing->x(),player_facing->y()+50);
     }
     //##################LEFT#############
-    if(key->key() == Qt::Key_Left) {
+    if(key->key() == Qt::Key_Left){
         steps++;
         bool box_movable = true;
         bool movable = true;
-        for(int i = 0; i < idx_wall; i++) {
-            if(player_facing->x()-50==Wall[i]->x()&&player_facing->y()==Wall[i]->y()) {
-                movable = false; //to prevent character from walking into the wall
+        for(int a = 0;a < idx_wall;a++){
+            if(player_facing->x()-50==Wall[a]->x()&&player_facing->y()==Wall[a]->y()){
+                movable = false;
             }
         }
-        for(int i = 0; i < idx_box; i++) {
-            if(player_facing->x()-50==Box[i]->x()&&player_facing->y()==Box[i]->y()) {
-                for(int j = 0; j < idx_box; j++) {
-                    if(Box[i]->x()-50==Box[j]->x()&&Box[i]->y()==Box[j]->y()) {
+        for(int a = 0;a < idx_box;a++){
+            if(player_facing->x()-50==Box[a]->x()&&player_facing->y()==Box[a]->y()){
+                for(int c = 0;c < idx_box;c++){
+                    if(Box[a]->x()-50==Box[c]->x()&&Box[a]->y()==Box[c]->y()){
                         box_movable=false;
                         movable=false;
                     }
                 }
-                for(int j = 0; j < idx_wall; j++) {
-                    if(Box[i]->x()-50==Wall[j]->x()&&Box[i]->y()==Wall[j]->y()) {
+                for(int b = 0;b < idx_wall;b++){
+                    if(Box[a]->x()-50==Wall[b]->x()&&Box[a]->y()==Wall[b]->y()){
                         box_movable =false;
                         movable = false;
                     }
                 }
             }
-            if(player_facing->x()-50==Box[i]->x()&&player_facing->y()==Box[i]->y()&&box_movable) {
-                Box[i]->raise();
-                Box[i]->move(Box[i]->x()-50,Box[i]->y());
+            if(player_facing->x()-50==Box[a]->x()&&player_facing->y()==Box[a]->y()&&box_movable){
+                Box[a]->raise();
+                Box[a]->move(Box[a]->x()-50,Box[a]->y());
             }
         }
         checkWin();
@@ -182,44 +148,44 @@ void MainWindow::keyPressEvent(QKeyEvent* key) {
             player_facing->move(player_facing->x()-50,player_facing->y());
     }
     //#################RIGHT##############
-    if(key->key() == Qt::Key_Right) {
+    if(key->key() == Qt::Key_Right){
         steps++;
         bool box_movable = true;
         bool movable = true;
-        for(int i = 0; i < idx_wall; i++) {
-            if(player_facing->x()+50==Wall[i]->x()&&player_facing->y()==Wall[i]->y()) {
-                movable = false; //to prevent character from walking into the wall
+        for(int a = 0;a < idx_wall;a++){
+            if(player_facing->x()+50==Wall[a]->x()&&player_facing->y()==Wall[a]->y()){
+                movable = false;
                 //QMessageBox msg;
                 //QString box1_x = QString::fromStdString(std::to_string(player_facing->x()));
-                //QString box2_x = QString::fromStdString(std::to_string(Wall[i]->x()));
+                //QString box2_x = QString::fromStdString(std::to_string(Wall[a]->x()));
                 //msg.setText(box1_x+" "+box2_x);
                 //msg.exec();
             }
         }
 
-        for(int i = 0; i < idx_box; i++) {
-            if(player_facing->x()+50==Box[i]->x()&&player_facing->y()==Box[i]->y()) {
+        for(int a = 0;a < idx_box;a++){
+            if(player_facing->x()+50==Box[a]->x()&&player_facing->y()==Box[a]->y()){
 
-                for(int j = 0; j < idx_box; j++) {
-                    if(Box[i]->x()+50==Box[j]->x()&&Box[i]->y()==Box[j]->y()) {
+                for(int c = 0;c < idx_box;c++){
+                    if(Box[a]->x()+50==Box[c]->x()&&Box[a]->y()==Box[c]->y()){
                         box_movable=false;
                         movable=false;
                         //QMessageBox msg;
-                        //QString box1_x = QString::fromStdString(std::to_string(Box[i]->x()));
-                        //QString box2_x = QString::fromStdString(std::to_string(Box[j]->x()));
+                        //QString box1_x = QString::fromStdString(std::to_string(Box[a]->x()));
+                        //QString box2_x = QString::fromStdString(std::to_string(Box[c]->x()));
                         //msg.setText(box1_x+" "+box2_x);
                         //msg.exec();
                     }
 
                 }
 
-                for(int j = 0; j < idx_wall; j++) {
-                    if(Box[i]->x()+50==Wall[j]->x()&&Box[i]->y()==Wall[j]->y()) {
+                for(int b = 0;b < idx_wall;b++){
+                    if(Box[a]->x()+50==Wall[b]->x()&&Box[a]->y()==Wall[b]->y()){
                         box_movable=false;
                         movable=false;
                         //QMessageBox msg;
-                        //QString box1_x = QString::fromStdString(std::to_string(Box[i]->x()));
-                        //QString wall_x = QString::fromStdString(std::to_string(Wall[j]->x()));
+                        //QString box1_x = QString::fromStdString(std::to_string(Box[a]->x()));
+                        //QString wall_x = QString::fromStdString(std::to_string(Wall[b]->x()));
                         //msg.setText(box1_x+" "+wall_x);
                         //msg.exec();
 
@@ -228,61 +194,188 @@ void MainWindow::keyPressEvent(QKeyEvent* key) {
 
 
             }
-            if(player_facing->x()+50==Box[i]->x()&&player_facing->y()==Box[i]->y()&&box_movable) {
-                Box[i]->raise();
-                Box[i]->move(Box[i]->x()+50,Box[i]->y());
+            if(player_facing->x()+50==Box[a]->x()&&player_facing->y()==Box[a]->y()&&box_movable){
+                Box[a]->raise();
+                Box[a]->move(Box[a]->x()+50,Box[a]->y());
             }
         }
         checkWin();
         emit character_turn_right();
-        if(player_facing->x()<=MainWindow::size().width()-100&&movable) {
+        if(player_facing->x()<=MainWindow::size().width()-100&&movable){
             player_facing->move(player_facing->x()+50,player_facing->y());
         }
 
     }
 }
+void MainWindow::clear_map(){
 
-void MainWindow::checkWin() {
-    int win=0;
-    for(int i = 0; i<idx_target; i++) {
-        for(int j = 0; j<idx_box; j++) {
-            if(Target[i]->x()==Box[j]->x()&&Target[i]->y()==Box[j]->y()) {
+    for(int i = 0;i<idx_box;i++){
+        delete Box[i];
+    }
+    for(int i = 0;i<idx_ground;i++){
+        delete Ground[i];
+    }
+    for(int i = 0;i<idx_target;i++){
+        delete Target[i];
+    }
+    for(int i = 0;i<idx_wall;i++){
+        delete Wall[i];
+    }
+
+}
+void MainWindow::checkWin(){
+    win = 0;
+    for(int i = 0; i<idx_target;i++){
+        for(int j = 0; j<idx_box;j++){
+            if(Target[i]->x()==Box[j]->x()&&Target[i]->y()==Box[j]->y()){
                 win++;
             }
         }
     }
-    if(win>=idx_target) {
+    if(win==idx_target){
         QMessageBox msg;
         QString steps_str = QString::fromStdString(std::to_string(steps));
         msg.setText("you win!!!!!!\nUsed Steps: "+steps_str+"\n");
         msg.exec();
+        msg.close();
+        clear_map();
+
+        init(arrdata2);
+        px=0;py=0;
+        Walked->setGeometry(50*px,50*py,50,50);
+        Walked -> raise();
+        Walked -> showNormal();
+        player_facing->setGeometry(50*px,50*py,50,50);
+        player_facing->showNormal();
+        player_facing->raise();
     }
 }
 
-void MainWindow::checkDead() {
+void MainWindow::checkDead(){
 
 }
+void MainWindow::mapGen(short int const lvl[10][10]){
 
-void MainWindow::character_turn_back() {
+    idx_ground = 0;
+    idx_wall = 0;
+    idx_target = 0;
+    idx_box = 0;
+
+    for(int x = 0; x<10;x++){
+        for(int y =0;y<10;y++){
+
+            switch(lvl[x][y]){
+            case 1:
+
+                ground[idx_ground] = new QPixmap(":/res/stone_ground.jpg");
+                Ground[idx_ground] = new QLabel(this);
+                Ground[idx_ground] -> setPixmap(*ground[idx_ground]);
+                Ground[idx_ground] -> setScaledContents(true);
+                Ground[idx_ground] -> setGeometry(50*x,50*y,50,50);
+                Ground[idx_ground]->raise();
+                Ground[idx_ground]->showNormal();
+                idx_ground++;
+                break;
+            case 2:
+
+                wall[idx_wall] = new QPixmap(":/res/brick.jpg");
+                Wall[idx_wall] = new QLabel(this);
+                Wall[idx_wall] -> setPixmap(*wall[idx_wall]);
+                Wall[idx_wall] -> setScaledContents(true);
+                Wall[idx_wall] -> setGeometry(50*x,50*y,50,50);
+                Wall[idx_wall] -> showNormal();
+                idx_wall++;
+                break;
+            case 3:
+                target[idx_target] = new QPixmap(":/res/target_ground.jpg");
+                Target[idx_target] = new QLabel(this);
+                Target[idx_target] -> setPixmap(*target[idx_target]);
+                Target[idx_target] -> setScaledContents(true);
+                Target[idx_target] -> setGeometry(50*x,50*y,50,50);
+                Target[idx_target]->showNormal();
+                idx_target++;
+                break;
+            case 4:
+                ground[idx_ground] = new QPixmap(":/res/stone_ground.jpg");
+                Ground[idx_ground] = new QLabel(this);
+                Ground[idx_ground] -> setPixmap(*ground[idx_ground]);
+                Ground[idx_ground] -> setScaledContents(true);
+                Ground[idx_ground] -> setGeometry(50*x,50*y,50,50);
+                Ground[idx_ground]->showNormal();
+                idx_ground++;
+
+                box[idx_box] = new QPixmap(":/res/wooden_box.png");
+                Box[idx_box] = new QLabel(this);
+                Box[idx_box] -> setPixmap(*box[idx_box]);
+                Box[idx_box] -> setScaledContents(true);
+                Box[idx_box] -> setGeometry(50*x,50*y,50,50);
+                Box[idx_box]->showNormal();
+                idx_box++;
+                break;
+            case 5:
+                px=x;
+                py=y;
+                break;
+            case 6:
+                px=x;
+                py=y;
+                target[idx_target] = new QPixmap(":/res/target_ground.jpg");
+                Target[idx_target] = new QLabel(this);
+                Target[idx_target] -> setPixmap(*target[idx_target]);
+                Target[idx_target] -> setScaledContents(true);
+                Target[idx_target] -> setGeometry(50*x,50*y,50,50);
+                Target[idx_target]->showNormal();
+                idx_target++;
+                break;
+            case 7:
+                checkWin();
+                target[idx_target] = new QPixmap(":/res/target_ground.jpg");
+                Target[idx_target] = new QLabel(this);
+                Target[idx_target] -> setPixmap(*target[idx_target]);
+                Target[idx_target] -> setScaledContents(true);
+                Target[idx_target] -> setGeometry(50*x,50*y,50,50);
+                Target[idx_target]->showNormal();
+                idx_target++;
+
+                box[idx_box] = new QPixmap(":/res/wooden_box.png");
+                Box[idx_box] = new QLabel(this);
+                Box[idx_box] -> setPixmap(*box[idx_box]);
+                Box[idx_box] -> setScaledContents(true);
+                Box[idx_box] -> setGeometry(50*x,50*y,50,50);
+                Box[idx_box]->showNormal();
+                idx_box++;
+            default:
+                break;
+            }
+        }
+
+    }
+
+}
+void MainWindow::character_turn_back(){
     player_facing->setPixmap(*back);
 }
-void MainWindow::character_turn_front() {
+void MainWindow::character_turn_front(){
     player_facing->setPixmap(*front);
 }
-void MainWindow::character_turn_left() {
+void MainWindow::character_turn_left(){
     player_facing->setPixmap(*left);
 }
-void MainWindow::character_turn_right() {
+void MainWindow::character_turn_right(){
     player_facing->setPixmap(*right);
 }
-MainWindow::~MainWindow() {
+MainWindow::~MainWindow()
+{
     delete ui;
 }
 /*
                         QMessageBox a(this);
                         //QString box_x= QString::fromStdString(std::to_string(Box[a]->x()));
-                        QString wall_x= QString::fromStdString(std::to_string(Wall[j]->x()));
+                        QString wall_x= QString::fromStdString(std::to_string(Wall[b]->x()));
                         a.setText(wall_x);
                         a.exec();
 
 */
+
+
+
