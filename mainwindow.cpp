@@ -27,11 +27,13 @@ void MainWindow::init(short int arr[10][10]){
     Walked -> setPixmap(*walked);
     Walked -> setScaledContents(true);
     Walked -> setGeometry(50*px,50*py,50,50);
+    Walked -> show();
     //character
     player_facing = new QLabel(this);
     player_facing -> setGeometry(50*px,50*py,50,50);
     player_facing -> setPixmap(*front);
     player_facing -> setScaledContents(true);
+    player_facing -> show();
 }
 
 void MainWindow::mainmenu() {
@@ -75,11 +77,8 @@ void MainWindow::input_map_name() {
 
 void MainWindow::hide_menu(){
     mainmenu_BG -> hide();
-    //mainmenu_BG -> lower();
     Start_btn -> hide();
-    //Start_btn -> lower();
     Exit_btn -> hide();
-    //Exit_btn -> lower();
     input_map_name();
 }
 void MainWindow::quit() {
@@ -318,7 +317,7 @@ void MainWindow::mapGen(short int arrdata[10][10]) {
             switch(arrdata[x][y]) {
             case 1: //ground
                 ground[idx_ground] = new QPixmap(":/res/stone_ground.jpg");
-                Ground[idx_ground] = new QLabel(Ground[idx_ground]);
+                Ground[idx_ground] = new QLabel(this);
                 Ground[idx_ground] -> setPixmap(*(ground[idx_ground]));
                 Ground[idx_ground] -> setScaledContents(true);
                 Ground[idx_ground] -> setGeometry(50*x,50*y,50,50);
@@ -328,7 +327,7 @@ void MainWindow::mapGen(short int arrdata[10][10]) {
                 break;
             case 2: //wall
                 wall[idx_wall] = new QPixmap(":/res/brick.jpg");
-                Wall[idx_wall] = new QLabel(Wall[idx_wall]);
+                Wall[idx_wall] = new QLabel(this);
                 Wall[idx_wall] -> setPixmap(*(wall[idx_wall]));
                 Wall[idx_wall] -> setScaledContents(true);
                 Wall[idx_wall] -> setGeometry(50*x,50*y,50,50);
@@ -338,7 +337,7 @@ void MainWindow::mapGen(short int arrdata[10][10]) {
                 break;
             case 3: //target
                 target[idx_target] = new QPixmap(":/res/target_ground.jpg");
-                Target[idx_target] = new QLabel(Target[idx_target]);
+                Target[idx_target] = new QLabel(this);
                 Target[idx_target] -> setPixmap(*(target[idx_target]));
                 Target[idx_target] -> setScaledContents(true);
                 Target[idx_target] -> setGeometry(50*x,50*y,50,50);
@@ -348,7 +347,7 @@ void MainWindow::mapGen(short int arrdata[10][10]) {
                 break;
             case 4: //box
                 ground[idx_ground] = new QPixmap(":/res/stone_ground.jpg");
-                Ground[idx_ground] = new QLabel(Ground[idx_ground]);
+                Ground[idx_ground] = new QLabel(this);
                 Ground[idx_ground] -> setPixmap(*(ground[idx_ground]));
                 Ground[idx_ground] -> setScaledContents(true);
                 Ground[idx_ground] -> setGeometry(50*x,50*y,50,50);
@@ -357,7 +356,7 @@ void MainWindow::mapGen(short int arrdata[10][10]) {
                 idx_ground++;
 
                 box[idx_box] = new QPixmap(":/res/wooden_box.png");
-                Box[idx_box] = new QLabel(Box[idx_box]);
+                Box[idx_box] = new QLabel(this);
                 Box[idx_box] -> setPixmap(*(box[idx_box]));
                 Box[idx_box] -> setScaledContents(true);
                 Box[idx_box] -> setGeometry(50*x,50*y,50,50);
@@ -374,7 +373,7 @@ void MainWindow::mapGen(short int arrdata[10][10]) {
                 py=y;
 
                 target[idx_target] = new QPixmap(":/res/target_ground.jpg");
-                Target[idx_target] = new QLabel(Target[idx_target]);
+                Target[idx_target] = new QLabel(this);
                 Target[idx_target] -> setPixmap(*(target[idx_target]));
                 Target[idx_target] -> setScaledContents(true);
                 Target[idx_target] -> setGeometry(50*x,50*y,50,50);
@@ -384,7 +383,7 @@ void MainWindow::mapGen(short int arrdata[10][10]) {
                 break;
             case 7: //box + target
                 box[idx_box] = new QPixmap(":/res/wooden_box.png");
-                Box[idx_box] = new QLabel(Box[idx_box]);
+                Box[idx_box] = new QLabel(this);
                 Box[idx_box] -> setPixmap(*(box[idx_box]));
                 Box[idx_box] -> setScaledContents(true);
                 Box[idx_box] -> setGeometry(50*x,50*y,50,50);
@@ -393,7 +392,7 @@ void MainWindow::mapGen(short int arrdata[10][10]) {
                 idx_box++;
 
                 target[idx_target] = new QPixmap(":/res/target_ground.jpg");
-                Target[idx_target] = new QLabel(Target[idx_target]);
+                Target[idx_target] = new QLabel(this);
                 Target[idx_target] -> setPixmap(*(target[idx_target]));
                 Target[idx_target] -> setScaledContents(true);
                 Target[idx_target] -> setGeometry(50*x,50*y,50,50);
@@ -435,7 +434,7 @@ void MainWindow::map_preprocessor() {
         Input_btn -> hide();
     }
     if(input_level->text().isEmpty() || first_run != 0){
-        loaded_level = loaded_level + QVariant(level_count).toString()  + QVariant(".txt").toString();
+        loaded_level = loaded_level + QVariant(level_count).toString() + QVariant(".txt").toString();
     }
     else{
         loaded_level = loaded_level + input_level->text() + QVariant(".txt").toString();
@@ -451,12 +450,15 @@ void MainWindow::load_map(){
     if(!level_loader.open(QIODevice::ReadOnly)){
         QMessageBox::information(this, tr("Unable to open file") , level_loader.errorString());
     }
-    QDataStream in(&level_loader);
+    QTextStream in(&level_loader);
+    in.setIntegerBase(10);
     for (int i = 0 ; i < 10 ; i++ ) {
         for (int j = 0 ; j < 10 ; j++ ) {
             in >> level_data[i][j];
+            //qDebug() << level_data[i][j];
         }
     }
+
     init(level_data);
 }
 /*
