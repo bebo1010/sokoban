@@ -16,8 +16,10 @@
 #include <QFont>
 
 #include <QString>
+#include <QDir>
+#include <QVariant>
 #include <QLineEdit>
-#include <QFile>
+#include <fstream>
 #include <QDataStream>
 namespace Ui {
 class MainWindow;
@@ -31,8 +33,8 @@ class MainWindow : public QMainWindow {
 
     void input_map_name();
     void load_map();
-    void mapGen(short int (&arrdata)[10][10]);
-    void init(short int (&arr)[10][10]);
+    void mapGen(short int arrdata[10][10]);
+    void init(short int arr[10][10]);
 
     void character_turn_back();
     void character_turn_front();
@@ -92,10 +94,10 @@ class MainWindow : public QMainWindow {
     int steps=0;
 
     QLineEdit *input_level;
-    char level_count = '1';
+    int level_count = 1;
     QPushButton *Input_btn;
     QLabel *Input_Rule;
-    QString loaded_level = ":/mapdata/level_";
+    QString loaded_level = QVariant(":").toString() + QDir::separator() + QVariant("mapdata").toString() + QDir::separator() + QVariant("level_").toString();
     short int level_data[10][10];
 
 
