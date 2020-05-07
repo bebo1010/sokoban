@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 }
 
-void MainWindow::init(short int (&arr)[10][10]){
+void MainWindow::init(short int arr[10][10]){
     front = new QPixmap(":/res/main_character(front).png");
     back = new QPixmap(":/res/main_character(back).png");
     left = new QPixmap(":/res/main_character(left).png");
@@ -41,7 +41,7 @@ void MainWindow::mainmenu() {
     mainmenu_BG->setPixmap(*mainmenu_image);
     mainmenu_BG->setGeometry(0,0,500,500);
     mainmenu_BG->setScaledContents(true);
-    first_run = 1;
+
 
     Start_btn = new QPushButton("Start", this);
     Start_btn->raise();
@@ -306,7 +306,7 @@ void MainWindow::checkWin() {
     }
 }
 
-void MainWindow::mapGen(short int (&arrdata)[10][10]) {
+void MainWindow::mapGen(short int arrdata[10][10]) {
     idx_ground = 0;
     idx_wall = 0;
     idx_target = 0;
@@ -429,14 +429,18 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::map_preprocessor() {
-    Input_Rule -> hide();
-    input_level -> hide();
-    Input_btn -> hide();
+    if(first_run == 0){
+        Input_Rule -> hide();
+        input_level -> hide();
+        Input_btn -> hide();
+    }
     if(input_level->text().isEmpty() || first_run != 0){
-        loaded_level = loaded_level + static_cast<QString>(level_count) + ".txt";
+        loaded_level = loaded_level + QVariant(level_count).toString()  + QVariant(".txt").toString();
     }
     else{
-        loaded_level = loaded_level + static_cast<QString>(input_level->text()) + ".txt";
+        loaded_level = loaded_level + input_level->text() + QVariant(".txt").toString();
+        level_count = input_level->text().toInt();
+        first_run = 1;
     }
     load_map();
 }
@@ -445,13 +449,12 @@ void MainWindow::load_map(){
 
     QFile level_loader(loaded_level);
     if(!level_loader.open(QIODevice::ReadOnly)){
-        QMessageBox::information(this, tr("Unable to open file"),level_loader.errorString());
+        QMessageBox::information(this, tr("Unable to open file") , level_loader.errorString());
     }
-    QDataStream IN(&level_loader);
-    IN.setVersion(QDataStream::Qt_4_8);
+    QDataStream in(&level_loader);
     for (int i = 0 ; i < 10 ; i++ ) {
         for (int j = 0 ; j < 10 ; j++ ) {
-            IN >> level_data[i][j];
+            in >> level_data[i][j];
         }
     }
     init(level_data);
