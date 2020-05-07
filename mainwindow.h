@@ -19,8 +19,7 @@
 #include <QDir>
 #include <QVariant>
 #include <QLineEdit>
-#include <fstream>
-#include <QDataStream>
+#include <QTextStream>
 namespace Ui {
 class MainWindow;
 }
