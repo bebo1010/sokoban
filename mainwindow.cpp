@@ -15,15 +15,8 @@ MainWindow::MainWindow(QWidget *parent) :
     back = new QPixmap(":/res/main_character(back).png");
     left = new QPixmap(":/res/main_character(left).png");
     right = new QPixmap(":/res/main_character(right).png");
-    walked = new QPixmap(":/res/stone_ground.jpg");
-    Walked = new QLabel(this);
-    player_facing = new QLabel(this);
-    Walked -> setPixmap(*walked);
-    Walked -> setScaledContents(true);
-    Walked -> hide();
-    player_facing -> setPixmap(*front);
-    player_facing -> setScaledContents(true);
-    player_facing -> hide();
+
+
     mainmenu();
 
 }
@@ -34,15 +27,20 @@ void MainWindow::init(short int arr[10][10]){
     mapGen(arr);
     setFocusPolicy(Qt::StrongFocus);
 
-
+    walked = new QPixmap(":/res/stone_ground.jpg");
+    Walked = new QLabel(this);
+    Walked -> setPixmap(*walked);
+    Walked -> setScaledContents(true);
     Walked -> setGeometry(50*px,50*py,50,50);
     Walked -> show();
     //character
-
+    player_facing = new QLabel(this);
+    player_facing -> setPixmap(*front);
+    player_facing -> setScaledContents(true);
     player_facing -> setGeometry(50*px,50*py,50,50);
-
     player_facing -> show();
     player_facing -> raise();
+    playing = 1;
 }
 
 void MainWindow::mainmenu() {
@@ -91,6 +89,64 @@ void MainWindow::hide_menu(){
     Start_btn -> hide();
     Exit_btn -> hide();
     input_map_name();
+}
+
+void MainWindow::hide_map(){
+    Walked -> hide();
+    player_facing -> hide();
+    for(int i = 0;i<idx_box;i++){
+      Box[i] -> hide();
+    }
+    for(int i = 0;i<idx_ground;i++){
+        Ground[i] -> hide();
+    }
+    for(int i = 0;i<idx_target;i++){
+        Target[i] -> hide();
+    }
+    for(int i = 0;i<idx_wall;i++){
+        Wall[i] -> hide();
+    }
+    reset_menu();
+}
+
+void MainWindow::show_map(){
+    delete Reset_btn;
+    delete Reset_Rule;
+    delete Cancel_reset_btn;
+    Walked -> show();
+    player_facing -> show();
+    for(int i = 0;i<idx_box;i++){
+      Box[i] -> show();
+    }
+    for(int i = 0;i<idx_ground;i++){
+        Ground[i] -> show();
+    }
+    for(int i = 0;i<idx_target;i++){
+        Target[i] -> show();
+    }
+    for(int i = 0;i<idx_wall;i++){
+        Wall[i] -> show();
+    }
+}
+
+void MainWindow::reset_menu(){
+    Reset_btn = new QPushButton(this);
+    Reset_btn -> setText("CONFIRM");
+    Reset_btn -> setFont(QFont("Courier New", 14, QFont::Bold));
+    Reset_btn -> setGeometry(100 , 350 , 100 , 30);
+    Reset_btn -> show();
+    Cancel_reset_btn = new QPushButton(this);
+    Cancel_reset_btn -> setText("CANCEL");
+    Cancel_reset_btn -> setFont(QFont("Courier New" , 14 , QFont::Bold));
+    Cancel_reset_btn -> setGeometry(300 , 350 , 100 , 30);
+    Cancel_reset_btn -> show();
+    Reset_Rule = new QLabel(this);
+    Reset_Rule -> setFont(QFont("Courier New", 14));
+    Reset_Rule -> setText("If you wish to reset the level.\nClick the CONFIRM button below.");
+    Reset_Rule -> setGeometry(50 , 200 , 350 , 80);
+    Reset_Rule -> show();
+    connect(Reset_btn , SIGNAL(clicked()) , this , SLOT(reset_preprocessor()));
+    connect(Cancel_reset_btn , SIGNAL(clicked()) , this , SLOT(show_map()));
 }
 void MainWindow::quit() {
     exit(0);
@@ -252,12 +308,18 @@ void MainWindow::keyPressEvent(QKeyEvent* key) {
         if(player_facing->x()<=MainWindow::size().width()-100&&movable) {
             player_facing->move(player_facing->x()+50,player_facing->y());
         }
-
+    }
+    if(key->key() == Qt::Key_X){
+        if(playing == 1){
+                emit hide_map();
+        }
     }
 }
 
 void MainWindow::clear_map(){
-
+    delete walked;
+    delete Walked;
+    delete player_facing;
     for(int i = 0;i<idx_box;i++){
         delete Box[i];
     }
@@ -422,12 +484,20 @@ MainWindow::~MainWindow() {
     delete ui;
 }
 
+void MainWindow::reset_preprocessor(){
+    delete Reset_btn;
+    delete Reset_Rule;
+    delete Cancel_reset_btn;
+    clear_map();
+    map_preprocessor();
+}
+
 void MainWindow::map_preprocessor() {
     loaded_level = QVariant(":").toString() + QDir::separator() + QVariant("mapdata").toString() + QDir::separator() + QVariant("level_").toString();
     if(first_run == 0){
-        Input_Rule -> hide();
+        delete Input_Rule;
         input_level -> hide();
-        Input_btn -> hide();
+        delete Input_btn;
     }
     if(input_level->text().isEmpty() || first_run != 0){
         loaded_level = loaded_level + QVariant(level_count).toString() + QVariant(".txt").toString();
