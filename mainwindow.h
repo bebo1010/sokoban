@@ -79,7 +79,9 @@ class MainWindow : public QMainWindow {
 
     QLabel * setLabel(QLabel *label);
   public slots:
-
+    void hide_map();
+    void show_map();
+    void reset_preprocessor();
     void map_preprocessor();
     void quit();
     void hide_menu();
@@ -98,12 +100,17 @@ class MainWindow : public QMainWindow {
     QLabel *Input_Rule;
     QString loaded_level;
     short int level_data[10][10];
-
+    bool playing = 0;
 
     QPushButton *Start_btn;
     QPushButton *Exit_btn;
 
 
+
+    void reset_menu();
+    QPushButton *Reset_btn;
+    QPushButton *Cancel_reset_btn;
+    QLabel *Reset_Rule;
     void keyPressEvent( QKeyEvent *event );
 };
 
