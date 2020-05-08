@@ -11,29 +11,36 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    front = new QPixmap(":/res/main_character(front).png");
+    back = new QPixmap(":/res/main_character(back).png");
+    left = new QPixmap(":/res/main_character(left).png");
+    right = new QPixmap(":/res/main_character(right).png");
+    walked = new QPixmap(":/res/stone_ground.jpg");
+    Walked = new QLabel(this);
+    player_facing = new QLabel(this);
+    Walked -> setPixmap(*walked);
+    Walked -> setScaledContents(true);
+    Walked -> hide();
+    player_facing -> setPixmap(*front);
+    player_facing -> setScaledContents(true);
+    player_facing -> hide();
     mainmenu();
 
 }
 
 void MainWindow::init(short int arr[10][10]){
-    front = new QPixmap(":/res/main_character(front).png");
-    back = new QPixmap(":/res/main_character(back).png");
-    left = new QPixmap(":/res/main_character(left).png");
-    right = new QPixmap(":/res/main_character(right).png");
+
 
     mapGen(arr);
     setFocusPolicy(Qt::StrongFocus);
-    walked = new QPixmap(":/res/stone_ground.jpg");
-    Walked = new QLabel(this);
-    Walked -> setPixmap(*walked);
-    Walked -> setScaledContents(true);
+
+
     Walked -> setGeometry(50*px,50*py,50,50);
     Walked -> show();
     //character
-    player_facing = new QLabel(this);
+
     player_facing -> setGeometry(50*px,50*py,50,50);
-    player_facing -> setPixmap(*front);
-    player_facing -> setScaledContents(true);
+
     player_facing -> show();
     player_facing -> raise();
 }
@@ -428,8 +435,9 @@ void MainWindow::map_preprocessor() {
     else{
         loaded_level = loaded_level + input_level->text() + QVariant(".txt").toString();
         level_count = input_level->text().toInt();
-        first_run = 1;
+
     }
+    first_run = 1;
     load_map();
 }
 
