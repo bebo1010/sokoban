@@ -96,7 +96,7 @@ class MainWindow : public QMainWindow {
     int level_count = 1;
     QPushButton *Input_btn;
     QLabel *Input_Rule;
-    QString loaded_level = QVariant(":").toString() + QDir::separator() + QVariant("mapdata").toString() + QDir::separator() + QVariant("level_").toString();
+    QString loaded_level;
     short int level_data[10][10];
 
 
