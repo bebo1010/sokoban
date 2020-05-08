@@ -16,39 +16,53 @@ MainWindow::MainWindow(QWidget *parent) :
     left = new QPixmap(":/res/main_character(left).png");
     right = new QPixmap(":/res/main_character(right).png");
 
-
+    timer = new QTimer(this);
     mainmenu();
 
 }
 
 void MainWindow::init(short int arr[10][10]){
-
-
     mapGen(arr);
     setFocusPolicy(Qt::StrongFocus);
-
-    walked = new QPixmap(":/res/stone_ground.jpg");
-    Walked = new QLabel(this);
-    Walked -> setPixmap(*walked);
-    Walked -> setScaledContents(true);
-    Walked -> setGeometry(50*px,50*py,50,50);
-    Walked -> show();
-    //character
-    player_facing = new QLabel(this);
-    player_facing -> setPixmap(*front);
-    player_facing -> setScaledContents(true);
-    player_facing -> setGeometry(50*px,50*py,50,50);
-    player_facing -> show();
+    steps = 0;
     player_facing -> raise();
     playing = 1;
+
+    timer->start(1000);
+    real_time_timer = new QLabel(this);
+    real_time_timer->setText("Time : 0");
+    real_time_timer->setFont(QFont("Courier New", 14));
+    real_time_timer->setGeometry(20,505,100,50);
+    connect(timer, SIGNAL(timeout()), this, SLOT(update_timer()));
+    real_time_step_counter = new QLabel(this);
+    real_time_step_counter->setText("Steps : 0");
+    real_time_step_counter->setFont(QFont("Courier New", 14));
+    real_time_step_counter->setGeometry(270,505,200,50);
+    real_time_timer->show();
+    real_time_step_counter->show();
+
 }
 
+void MainWindow::update_timer(){
+    QString timer_text = "Time : ";
+    back_end_timer = back_end_timer + 1;
+    timer_text.append(QVariant(back_end_timer).toString());
+    real_time_timer->setText(timer_text);
+    timer->start(1000);
+}
+
+void MainWindow::update_step_counter(){
+    steps++;
+    QString steps_text = "Steps : ";
+    steps_text.append(QVariant(steps).toString());
+    real_time_step_counter->setText(steps_text);
+}
 void MainWindow::mainmenu() {
 
     mainmenu_image = new QPixmap(":/res/background.jpg");
     mainmenu_BG = new QLabel(this);
     mainmenu_BG->setPixmap(*mainmenu_image);
-    mainmenu_BG->setGeometry(0,0,500,500);
+    mainmenu_BG->setGeometry(0,0,550,550);
     mainmenu_BG->setScaledContents(true);
 
 
@@ -92,6 +106,7 @@ void MainWindow::hide_menu(){
 }
 
 void MainWindow::hide_map(){
+    timer->stop();
     Walked -> hide();
     player_facing -> hide();
     for(int i = 0;i<idx_box;i++){
@@ -127,9 +142,12 @@ void MainWindow::show_map(){
     for(int i = 0;i<idx_wall;i++){
         Wall[i] -> show();
     }
+    playing = 1;
+    timer->start();
 }
 
 void MainWindow::reset_menu(){
+    playing = 0;
     Reset_btn = new QPushButton(this);
     Reset_btn -> setText("CONFIRM");
     Reset_btn -> setFont(QFont("Courier New", 14, QFont::Bold));
@@ -163,7 +181,6 @@ void MainWindow::quit() {
 void MainWindow::keyPressEvent(QKeyEvent* key) {
     //#############UP##################
     if(key->key() == Qt::Key_Up) {
-        steps++;
         bool movable = true;
         bool box_movable = true;
         emit character_turn_back();
@@ -192,15 +209,18 @@ void MainWindow::keyPressEvent(QKeyEvent* key) {
                 Box[i]->move(Box[i]->x(),Box[i]->y()-50);
             }
         }
-        checkWin();
-        if(player_facing->y()>=50&&movable)
-            player_facing->move(player_facing->x(),player_facing->y()-50);
+        if(!checkWin()){
+            if(player_facing->y()>=50&&movable) {
+                player_facing->move(player_facing->x(),player_facing->y()-50);
+                update_step_counter();
+            }
+        }
     }
     //###########DOWN############
     if(key->key() == Qt::Key_Down) {
-        steps++;
         bool movable = true;
         bool box_movable = true;
+        emit character_turn_front();
         for(int i = 0; i < idx_wall; i++) {
             if(player_facing->y()+50==Wall[i]->y()&&player_facing->x()==Wall[i]->x()) {
                 movable = false; //to prevent character from walking into the wall
@@ -227,16 +247,18 @@ void MainWindow::keyPressEvent(QKeyEvent* key) {
                 Box[i]->move(Box[i]->x(),Box[i]->y()+50);
             }
         }
-        checkWin();
-        emit character_turn_front();
-        if(player_facing->y()<=MainWindow::size().height()-100&&movable)
-            player_facing->move(player_facing->x(),player_facing->y()+50);
+        if(!checkWin()){
+            if(player_facing->y()<=MainWindow::size().height()-100&&movable) {
+                player_facing->move(player_facing->x(),player_facing->y()+50);
+                update_step_counter();
+            }
+        }
     }
     //##################LEFT#############
     if(key->key() == Qt::Key_Left) {
-        steps++;
         bool box_movable = true;
         bool movable = true;
+        emit character_turn_left();
         for(int i = 0; i < idx_wall; i++) {
             if(player_facing->x()-50==Wall[i]->x()&&player_facing->y()==Wall[i]->y()) {
                 movable = false; //to prevent character from walking into the wall
@@ -262,16 +284,18 @@ void MainWindow::keyPressEvent(QKeyEvent* key) {
                 Box[i]->move(Box[i]->x()-50,Box[i]->y());
             }
         }
-        checkWin();
-        emit character_turn_left();
-        if(player_facing->x()>=50&&movable)
-            player_facing->move(player_facing->x()-50,player_facing->y());
+        if(!checkWin()){
+            if(player_facing->x()>=50&&movable) {
+                player_facing->move(player_facing->x()-50,player_facing->y());
+                update_step_counter();
+            }
+        }
     }
     //#################RIGHT##############
     if(key->key() == Qt::Key_Right) {
-        steps++;
         bool box_movable = true;
         bool movable = true;
+        emit character_turn_right();
         for(int i = 0; i < idx_wall; i++) {
             if(player_facing->x()+50==Wall[i]->x()&&player_facing->y()==Wall[i]->y()) {
                 movable = false; //to prevent character from walking into the wall
@@ -303,10 +327,11 @@ void MainWindow::keyPressEvent(QKeyEvent* key) {
                 Box[i]->move(Box[i]->x()+50,Box[i]->y());
             }
         }
-        checkWin();
-        emit character_turn_right();
-        if(player_facing->x()<=MainWindow::size().width()-100&&movable) {
-            player_facing->move(player_facing->x()+50,player_facing->y());
+        if(!checkWin()){
+            if(player_facing->x()<=MainWindow::size().width()-100&&movable) {
+                player_facing->move(player_facing->x()+50,player_facing->y());
+                update_step_counter();
+            }
         }
     }
     if(key->key() == Qt::Key_X){
@@ -320,6 +345,13 @@ void MainWindow::clear_map(){
     delete walked;
     delete Walked;
     delete player_facing;
+    delete real_time_timer;
+    delete real_time_step_counter;
+    for (int i = 0 ; i < 10 ; i++ ) {
+        for (int j = 0 ; j < 10 ; j++ ) {
+            level_data[i][j] = 0;
+        }
+    }
     for(int i = 0;i<idx_box;i++){
         delete Box[i];
     }
@@ -334,7 +366,7 @@ void MainWindow::clear_map(){
     }
 
 }
-void MainWindow::checkWin() {
+bool MainWindow::checkWin() {
     int win=0;
     for(int i = 0; i<idx_target; i++) {
         for(int j = 0; j<idx_box; j++) {
@@ -345,21 +377,16 @@ void MainWindow::checkWin() {
     }
     if(win>=idx_target) {
         QMessageBox msg;
-                QString steps_str = QString::fromStdString(std::to_string(steps));
-                msg.setText("you win!!!!!!\nUsed Steps: "+steps_str+"\n");
-                msg.exec();
-                msg.close();
-                clear_map();
-                level_count++;
-                map_preprocessor();
-                px=0;py=0;
-                Walked->setGeometry(50*px,50*py,50,50);
-                Walked -> raise();
-                Walked -> showNormal();
-                player_facing->setGeometry(50*px,50*py,50,50);
-                player_facing->showNormal();
-                player_facing->raise();
-    }
+        QString steps_str = QString::fromStdString(std::to_string(steps));
+        msg.setText("you win!!!!!!\nUsed Steps: "+steps_str+"\n");
+        msg.exec();
+        msg.close();
+        clear_map();
+        level_count++;
+        map_preprocessor();
+        return true;
+   }
+    return false;
 }
 
 void MainWindow::mapGen(short int arrdata[10][10]) {
@@ -422,19 +449,37 @@ void MainWindow::mapGen(short int arrdata[10][10]) {
                 idx_box++;
                 break;
             case 5: //player
-                px=x;
-                py=y;
+                walked = new QPixmap(":/res/stone_ground.jpg");
+                Walked = new QLabel(this);
+                Walked -> setPixmap(*walked);
+                Walked -> setScaledContents(true);
+                Walked -> setGeometry(50*x,50*y,50,50);
+                Walked -> show();
+                //character
+                player_facing = new QLabel(this);
+                player_facing -> setPixmap(*front);
+                player_facing -> setScaledContents(true);
+                player_facing -> setGeometry(50*x,50*y,50,50);
+                player_facing -> show();
                 break;
             case 6: //player + target
-                px=x;
-                py=y;
-
+                walked = new QPixmap(":/res/stone_ground.jpg");
+                Walked = new QLabel(this);
+                Walked -> setPixmap(*walked);
+                Walked -> setScaledContents(true);
+                Walked -> setGeometry(50*x,50*y,50,50);
+                Walked -> show();
+                //character
+                player_facing = new QLabel(this);
+                player_facing -> setPixmap(*front);
+                player_facing -> setScaledContents(true);
+                player_facing -> setGeometry(50*x,50*y,50,50);
+                player_facing -> show();
                 target[idx_target] = new QPixmap(":/res/target_ground.jpg");
                 Target[idx_target] = new QLabel(this);
                 Target[idx_target] -> setPixmap(*(target[idx_target]));
                 Target[idx_target] -> setScaledContents(true);
                 Target[idx_target] -> setGeometry(50*x,50*y,50,50);
-                Target[idx_target] -> raise();
                 Target[idx_target] -> showNormal();
                 idx_target++;
                 break;
@@ -444,7 +489,6 @@ void MainWindow::mapGen(short int arrdata[10][10]) {
                 Box[idx_box] -> setPixmap(*(box[idx_box]));
                 Box[idx_box] -> setScaledContents(true);
                 Box[idx_box] -> setGeometry(50*x,50*y,50,50);
-                Box[idx_box] -> raise();
                 Box[idx_box] -> showNormal();
                 idx_box++;
 
@@ -453,9 +497,9 @@ void MainWindow::mapGen(short int arrdata[10][10]) {
                 Target[idx_target] -> setPixmap(*(target[idx_target]));
                 Target[idx_target] -> setScaledContents(true);
                 Target[idx_target] -> setGeometry(50*x,50*y,50,50);
-                Target[idx_target] -> raise();
                 Target[idx_target] -> showNormal();
                 idx_target++;
+                Box[idx_box-1] -> raise();
                 break;
             default:
                 break;
@@ -480,9 +524,7 @@ void MainWindow::character_turn_left() {
 void MainWindow::character_turn_right() {
     player_facing->setPixmap(*right);
 }
-MainWindow::~MainWindow() {
-    delete ui;
-}
+
 
 void MainWindow::reset_preprocessor(){
     delete Reset_btn;
@@ -525,6 +567,8 @@ void MainWindow::load_map(){
             //qDebug() << level_data[i][j];
         }
     }
-
     init(level_data);
+}
+MainWindow::~MainWindow() {
+    delete ui;
 }
