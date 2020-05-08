@@ -20,6 +20,8 @@
 #include <QVariant>
 #include <QLineEdit>
 #include <QTextStream>
+
+#include <QTimer>
 namespace Ui {
 class MainWindow;
 }
@@ -42,7 +44,7 @@ class MainWindow : public QMainWindow {
 
     void drawBackground(QPainter *painter, const QRectF &rect);
 
-    void checkWin();
+    bool checkWin();
     void checkDead();
     void clear_map();
     void close();
@@ -79,6 +81,7 @@ class MainWindow : public QMainWindow {
 
     QLabel * setLabel(QLabel *label);
   public slots:
+    void update_timer();
     void hide_map();
     void show_map();
     void reset_preprocessor();
@@ -105,7 +108,11 @@ class MainWindow : public QMainWindow {
     QPushButton *Start_btn;
     QPushButton *Exit_btn;
 
-
+    QTimer *timer;
+    QLabel *real_time_timer;
+    QLabel *real_time_step_counter;
+    long long int back_end_timer = 0;
+    void update_step_counter();
 
     void reset_menu();
     QPushButton *Reset_btn;
