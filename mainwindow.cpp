@@ -22,6 +22,7 @@ void MainWindow::init(short int arr[10][10]){
     right = new QPixmap(":/res/main_character(right).png");
 
     mapGen(arr);
+    setFocusPolicy(Qt::StrongFocus);
     walked = new QPixmap(":/res/stone_ground.jpg");
     Walked = new QLabel(this);
     Walked -> setPixmap(*walked);
@@ -34,6 +35,7 @@ void MainWindow::init(short int arr[10][10]){
     player_facing -> setPixmap(*front);
     player_facing -> setScaledContents(true);
     player_facing -> show();
+    player_facing -> raise();
 }
 
 void MainWindow::mainmenu() {
@@ -65,11 +67,13 @@ void MainWindow::input_map_name() {
     input_level -> setInputMask("00");
     input_level -> show();
     Input_Rule = new QLabel(this);
-    Input_Rule -> setGeometry(10 , 50 , 300 , 60);
-    Input_Rule -> setText("Input any two digit number, which indicates the level to load\n Leave blank if you want to load first level.");
+    Input_Rule -> setGeometry(10 , 40 , 400 , 100);
+    Input_Rule -> setFont(QFont("Courier New", 14));
+    Input_Rule -> setText("Input any integer(0~99),\n which indicates the level\n to be loaded.\n Leave blank if you want to\n load the first level.");
     Input_Rule -> show();
     Input_btn = new QPushButton(this);
     Input_btn -> setText("Confirm");
+    Input_btn -> setFont(QFont("Courier New", 14, QFont::Bold));
     Input_btn -> setGeometry(350 , 10 , 80 , 30);
     Input_btn -> show();
     connect(Input_btn , SIGNAL(clicked()) , this , SLOT(map_preprocessor()));
@@ -208,11 +212,6 @@ void MainWindow::keyPressEvent(QKeyEvent* key) {
         for(int i = 0; i < idx_wall; i++) {
             if(player_facing->x()+50==Wall[i]->x()&&player_facing->y()==Wall[i]->y()) {
                 movable = false; //to prevent character from walking into the wall
-                //QMessageBox msg;
-                //QString box1_x = QString::fromStdString(std::to_string(player_facing->x()));
-                //QString box2_x = QString::fromStdString(std::to_string(Wall[i]->x()));
-                //msg.setText(box1_x+" "+box2_x);
-                //msg.exec();
             }
         }
 
@@ -223,11 +222,6 @@ void MainWindow::keyPressEvent(QKeyEvent* key) {
                     if(Box[i]->x()+50==Box[j]->x()&&Box[i]->y()==Box[j]->y()) {
                         box_movable=false;
                         movable=false;
-                        //QMessageBox msg;
-                        //QString box1_x = QString::fromStdString(std::to_string(Box[i]->x()));
-                        //QString box2_x = QString::fromStdString(std::to_string(Box[j]->x()));
-                        //msg.setText(box1_x+" "+box2_x);
-                        //msg.exec();
                     }
 
                 }
@@ -236,12 +230,6 @@ void MainWindow::keyPressEvent(QKeyEvent* key) {
                     if(Box[i]->x()+50==Wall[j]->x()&&Box[i]->y()==Wall[j]->y()) {
                         box_movable=false;
                         movable=false;
-                        //QMessageBox msg;
-                        //QString box1_x = QString::fromStdString(std::to_string(Box[i]->x()));
-                        //QString wall_x = QString::fromStdString(std::to_string(Wall[j]->x()));
-                        //msg.setText(box1_x+" "+wall_x);
-                        //msg.exec();
-
                     }
                 }
 
@@ -428,6 +416,7 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::map_preprocessor() {
+    loaded_level = QVariant(":").toString() + QDir::separator() + QVariant("mapdata").toString() + QDir::separator() + QVariant("level_").toString();
     if(first_run == 0){
         Input_Rule -> hide();
         input_level -> hide();
@@ -461,11 +450,3 @@ void MainWindow::load_map(){
 
     init(level_data);
 }
-/*
-                        QMessageBox a(this);
-                        //QString box_x= QString::fromStdString(std::to_string(Box[a]->x()));
-                        QString wall_x= QString::fromStdString(std::to_string(Wall[j]->x()));
-                        a.setText(wall_x);
-                        a.exec();
-
-*/
