@@ -1,12 +1,10 @@
 #include "mainwindow.h"
+#include "player.h"
 #include <QApplication>
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
     MainWindow w;
-
     w.show();
-    w.setFixedSize(507,507);
-
+    w.setFixedSize(550,550);
     return a.exec();
 }

@@ -11,17 +11,12 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Sokoban</string>
-  </property>
-  <property name="windowIcon">
-   <iconset resource="resource.qrc">
-    <normaloff>:/res/wooden_box.png</normaloff>:/res/wooden_box.png</iconset>
+   <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget"/>
+  <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources>
-  <include location="resource.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

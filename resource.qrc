@@ -8,8 +8,8 @@
         <file>res/target_ground.jpg</file>
         <file>res/wooden_box.png</file>
         <file>res/main_character(front).png</file>
+        <file>res/background.jpg</file>
         <file>mapdata/level_1.txt</file>
-        <file>mapdata/level_10.txt</file>
         <file>mapdata/level_2.txt</file>
         <file>mapdata/level_3.txt</file>
         <file>mapdata/level_4.txt</file>
@@ -18,5 +18,6 @@
         <file>mapdata/level_7.txt</file>
         <file>mapdata/level_8.txt</file>
         <file>mapdata/level_9.txt</file>
+        <file>mapdata/level_10.txt</file>
     </qresource>
 </RCC>

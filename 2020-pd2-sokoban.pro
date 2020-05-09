@@ -27,13 +27,11 @@ CONFIG += c++11
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    player.cpp \
-    level_1.cpp
+    player.cpp
 
 HEADERS += \
         mainwindow.h \
-    player.h \
-    level_1.h
+    player.h
 
 FORMS += \
         mainwindow.ui
@@ -45,3 +43,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     resource.qrc
+
+DISTFILES +=
