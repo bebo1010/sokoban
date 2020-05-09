@@ -66,20 +66,86 @@ void MainWindow::mainmenu() {
     mainmenu_BG->setScaledContents(true);
 
 
-    Start_btn = new QPushButton("Start", this);
+    Start_btn = new QPushButton("START", this);
     Start_btn->raise();
     Start_btn->setFont(QFont("Courier New", 14, QFont::Bold));
     Start_btn->setGeometry(10,30,100,150);
     connect(Start_btn, SIGNAL(clicked()), this, SLOT(hide_menu()));
 
-    Exit_btn = new QPushButton("Quit", this);
+    Exit_btn = new QPushButton("QUIT", this);
     Exit_btn->raise();
     Exit_btn->setFont(QFont("Courier New", 14, QFont::Bold));
     Exit_btn->setGeometry(10,200,100,150);
     connect(Exit_btn, SIGNAL(clicked()), this, SLOT(quit()));
     Exit_btn->show();
+
+    Secret_btn = new QPushButton(this);
+    Secret_btn->raise();
+    Secret_btn->setGeometry(403,445,20,20);
+    Secret_btn->setFlat(true);
+    connect(Secret_btn,SIGNAL(clicked()),this,SLOT(secret_menu()));
 }
 
+void MainWindow::secret_menu(){
+    inputing_code = 1;
+    setFocusPolicy(Qt::StrongFocus);
+    Secret_menu_rule = new QLabel(this);
+    Secret_menu_rule -> setGeometry(10 , 100 , 500 , 200);
+    Secret_menu_rule -> setFont(QFont("Courier New", 14));
+    Secret_menu_rule -> setText("Input keys from keyboard.\nThe keys will be checked when 10 keys\n are pressed. Allowed keys are: numbers ,\n english characters(uppercase or lowercase\n don't matter) , and arrow keys.\n");
+    Secret_menu_rule -> show();
+    Secret_menu_input = new QLabel(this);
+    Secret_menu_input -> setGeometry(170 , 50 , 160 , 30);
+    Secret_menu_input -> setStyleSheet("border: 1px solid black");
+    Secret_menu_input -> setTextFormat(Qt::PlainText);
+    Secret_menu_input -> setText("");
+    Secret_menu_input -> setFont(QFont("Courier New" , 18));
+    Secret_menu_input -> show();
+    cancel_input_code = new QPushButton("CANCEL" , this);
+    cancel_input_code -> setGeometry(200 , 400 , 100 , 50);
+    cancel_input_code -> show();
+    connect(cancel_input_code , SIGNAL(clicked()),this,SLOT(hide_secret_menu()));
+    hide_menu();
+}
+
+void MainWindow::hide_secret_menu(){
+    delete Secret_menu_rule;
+    delete Secret_menu_input;
+    delete cancel_input_code;
+    inputing_code = 0;
+    show_menu();
+}
+void MainWindow::update_secret_input(){
+    QString secret_text = Secret_menu_input->text();
+    secret_text.append(QVariant("*").toString());
+    Secret_menu_input -> setText(secret_text);
+}
+
+bool MainWindow::check_code(){
+    if(code_input == code_answer)
+        return true;
+    else
+        return false;
+}
+
+void MainWindow::correct_input(){
+    Secret_menu_input->setText("");
+    code_input = "";
+    QMessageBox right_input_msgbox;
+    right_input_msgbox.setText("Achievement Unlocked!\nYou have unlocked\nNOTHING.\n");
+    right_input_msgbox.exec();
+    right_input_msgbox.close();
+    quit();
+}
+
+void MainWindow::wrong_input(){
+    Secret_menu_input->setText("");
+    code_input = "";
+    QMessageBox wrong_input_msgbox;
+    wrong_input_msgbox.setText("Wrong code input.\nPlease try again.\n");
+    wrong_input_msgbox.exec();
+    wrong_input_msgbox.close();
+}
 void MainWindow::input_map_name() {
     input_level = new QLineEdit(this);
     input_level -> setGeometry(10 , 10 , 300 , 30);
@@ -102,9 +168,15 @@ void MainWindow::hide_menu(){
     mainmenu_BG -> hide();
     Start_btn -> hide();
     Exit_btn -> hide();
-    input_map_name();
+    if(inputing_code == 0)
+        input_map_name();
 }
 
+void MainWindow::show_menu(){
+    mainmenu_BG->show();
+    Start_btn->show();
+    Exit_btn->show();
+}
 void MainWindow::hide_map(){
     timer->stop();
     Walked -> hide();
@@ -179,6 +251,26 @@ void MainWindow::quit() {
     return;
 }*/
 void MainWindow::keyPressEvent(QKeyEvent* key) {
+    if(inputing_code == 1){
+        if(key->key() == Qt::Key_Up)
+            code_input.append("U");
+        else if(key->key() == Qt::Key_Down)
+            code_input.append("D");
+        else if(key->key() == Qt::Key_Left)
+            code_input.append("L");
+        else if(key->key() == Qt::Key_Right)
+            code_input.append("R");
+        else code_input.append(key->text().toLower());
+        update_secret_input();
+        //qDebug() << code_input;
+        if(code_input.size() == 10){
+            if(check_code())
+                correct_input();
+            else
+                wrong_input();
+        }
+        return;
+    }
     //#############UP##################
     if(key->key() == Qt::Key_Up) {
         bool movable = true;
@@ -378,7 +470,8 @@ bool MainWindow::checkWin() {
     if(win>=idx_target) {
         QMessageBox msg;
         QString steps_str = QString::fromStdString(std::to_string(steps));
-        msg.setText("you win!!!!!!\nUsed Steps: "+steps_str+"\n");
+        QString timer_str = QString::fromStdString(std::to_string(back_end_timer));
+        msg.setText("you win!!!!!!\nUsed Steps: "+steps_str+"\nUsed Time: "+timer_str+"\n");
         msg.exec();
         msg.close();
         clear_map();
