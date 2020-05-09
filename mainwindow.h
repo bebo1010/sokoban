@@ -81,6 +81,8 @@ class MainWindow : public QMainWindow {
 
     QLabel * setLabel(QLabel *label);
   public slots:
+    void secret_menu();
+    void hide_secret_menu();
     void update_timer();
     void hide_map();
     void show_map();
@@ -103,10 +105,24 @@ class MainWindow : public QMainWindow {
     QLabel *Input_Rule;
     QString loaded_level;
     short int level_data[10][10];
+
+    bool inputing_code = 0;
     bool playing = 0;
 
     QPushButton *Start_btn;
     QPushButton *Exit_btn;
+
+    QPushButton *Secret_btn;
+    QLabel *Secret_menu_rule;
+    QLabel *Secret_menu_input;
+    void update_secret_input();
+    QPushButton *cancel_input_code;
+    void show_menu();
+    QString code_input = "";
+    QString code_answer = "UUDDLRLRba";
+    bool check_code();
+    void correct_input();
+    void wrong_input();
 
     QTimer *timer;
     QLabel *real_time_timer;
