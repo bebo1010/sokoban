@@ -134,6 +134,13 @@ class MainWindow : public QMainWindow {
     QPushButton *Reset_btn;
     QPushButton *Cancel_reset_btn;
     QLabel *Reset_Rule;
+    bool reset_mode = 0;
+
+    void quit_menu();
+    QPushButton *Quit_btn;
+    QPushButton *Cancel_quit_btn;
+    QLabel *Quit_Rule;
+    bool quit_mode = 0;
     void keyPressEvent( QKeyEvent *event );
 };
 
