@@ -1,4 +1,4 @@
-﻿#include "mainwindow.h"
+#include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QVarLengthArray>
 #include <QDebug>
@@ -15,8 +15,6 @@ MainWindow::MainWindow(QWidget *parent) :
     back = new QPixmap(":/res/main_character(back).png");
     left = new QPixmap(":/res/main_character(left).png");
     right = new QPixmap(":/res/main_character(right).png");
-
-    timer = new QTimer(this);
     mainmenu();
 
 }
@@ -25,9 +23,11 @@ void MainWindow::init(short int arr[10][10]){
     mapGen(arr);
     setFocusPolicy(Qt::StrongFocus);
     steps = 0;
+    back_end_timer = 0;
     player_facing -> raise();
     playing = 1;
 
+    timer = new QTimer(this);
     timer->start(1000);
     real_time_timer = new QLabel(this);
     real_time_timer->setText("Time : 0");
@@ -193,13 +193,25 @@ void MainWindow::hide_map(){
     for(int i = 0;i<idx_wall;i++){
         Wall[i] -> hide();
     }
-    reset_menu();
+    if(reset_mode == 1)
+        reset_menu();
+    if(quit_mode == 1)
+        quit_menu();
 }
 
 void MainWindow::show_map(){
-    delete Reset_btn;
-    delete Reset_Rule;
-    delete Cancel_reset_btn;
+    if(reset_mode == 1){
+        reset_mode = 0;
+        delete Reset_btn;
+        delete Reset_Rule;
+        delete Cancel_reset_btn;
+    }
+    if(quit_mode == 1){
+        quit_mode = 0;
+        delete Quit_btn;
+        delete Quit_Rule;
+        delete Cancel_quit_btn;
+    }
     Walked -> show();
     player_facing -> show();
     for(int i = 0;i<idx_box;i++){
@@ -237,6 +249,27 @@ void MainWindow::reset_menu(){
     Reset_Rule -> show();
     connect(Reset_btn , SIGNAL(clicked()) , this , SLOT(reset_preprocessor()));
     connect(Cancel_reset_btn , SIGNAL(clicked()) , this , SLOT(show_map()));
+}
+
+void MainWindow::quit_menu(){
+    playing = 0;
+    Quit_btn = new QPushButton(this);
+    Quit_btn -> setText("CONFIRM");
+    Quit_btn -> setFont(QFont("Courier New", 14, QFont::Bold));
+    Quit_btn -> setGeometry(100 , 350 , 100 , 30);
+    Quit_btn -> show();
+    Cancel_quit_btn = new QPushButton(this);
+    Cancel_quit_btn -> setText("CANCEL");
+    Cancel_quit_btn -> setFont(QFont("Courier New" , 14 , QFont::Bold));
+    Cancel_quit_btn -> setGeometry(300 , 350 , 100 , 30);
+    Cancel_quit_btn -> show();
+    Quit_Rule = new QLabel(this);
+    Quit_Rule -> setFont(QFont("Courier New", 14));
+    Quit_Rule -> setText("If you wish to quit the game.\nClick the CONFIRM button below.");
+    Quit_Rule -> setGeometry(50 , 200 , 350 , 80);
+    Quit_Rule -> show();
+    connect(Quit_btn , SIGNAL(clicked()) , this , SLOT(quit()));
+    connect(Cancel_quit_btn , SIGNAL(clicked()) , this , SLOT(show_map()));
 }
 void MainWindow::quit() {
     exit(0);
@@ -428,7 +461,14 @@ void MainWindow::keyPressEvent(QKeyEvent* key) {
     }
     if(key->key() == Qt::Key_X){
         if(playing == 1){
-                emit hide_map();
+            reset_mode = 1;
+            emit hide_map();
+        }
+    }
+    if(key->key() == Qt::Key_Q){
+        if(playing == 1){
+           quit_mode = 1;
+           emit hide_map();
         }
     }
 }
@@ -437,6 +477,7 @@ void MainWindow::clear_map(){
     delete walked;
     delete Walked;
     delete player_facing;
+    delete timer;
     delete real_time_timer;
     delete real_time_step_counter;
     for (int i = 0 ; i < 10 ; i++ ) {
@@ -459,6 +500,7 @@ void MainWindow::clear_map(){
 
 }
 bool MainWindow::checkWin() {
+    timer->stop();
     int win=0;
     for(int i = 0; i<idx_target; i++) {
         for(int j = 0; j<idx_box; j++) {
@@ -479,6 +521,7 @@ bool MainWindow::checkWin() {
         map_preprocessor();
         return true;
    }
+    timer->start();
     return false;
 }
 
@@ -623,6 +666,7 @@ void MainWindow::reset_preprocessor(){
     delete Reset_btn;
     delete Reset_Rule;
     delete Cancel_reset_btn;
+    reset_mode = 0;
     clear_map();
     map_preprocessor();
 }
@@ -631,7 +675,7 @@ void MainWindow::map_preprocessor() {
     loaded_level = QVariant(":").toString() + QDir::separator() + QVariant("mapdata").toString() + QDir::separator() + QVariant("level_").toString();
     if(first_run == 0){
         delete Input_Rule;
-        input_level -> hide();
+        input_level->hide();
         delete Input_btn;
     }
     if(input_level->text().isEmpty() || first_run != 0){
@@ -647,7 +691,6 @@ void MainWindow::map_preprocessor() {
 }
 
 void MainWindow::load_map(){
-
     QFile level_loader(loaded_level);
     if(!level_loader.open(QIODevice::ReadOnly)){
         QMessageBox::information(this, tr("Unable to open file") , level_loader.errorString());
