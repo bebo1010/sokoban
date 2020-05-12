@@ -84,6 +84,8 @@ class MainWindow : public QMainWindow {
     void secret_menu();
     void hide_secret_menu();
     void update_timer();
+    void load_saved_game();
+    void hide_saved_game_menu();
     void hide_map();
     void show_map();
     void reset_preprocessor();
@@ -112,6 +114,14 @@ class MainWindow : public QMainWindow {
     QPushButton *Start_btn;
     QPushButton *Exit_btn;
 
+    QPushButton *Saved_game_btn;
+    int saved_game_record[10][2] = {0};
+    bool in_saved_game_menu = 0;
+    void Saved_game_menu();
+    QLabel *Saved_game_labels[11];
+    QPushButton *back_to_menu;
+    void save_data();
+
     QPushButton *Secret_btn;
     QLabel *Secret_menu_rule;
     QLabel *Secret_menu_input;
@@ -134,12 +144,14 @@ class MainWindow : public QMainWindow {
     QPushButton *Reset_btn;
     QPushButton *Cancel_reset_btn;
     QLabel *Reset_Rule;
+    QLabel *second_Reset_Rule;
     bool reset_mode = 0;
 
     void quit_menu();
     QPushButton *Quit_btn;
     QPushButton *Cancel_quit_btn;
     QLabel *Quit_Rule;
+    QLabel *second_Quit_Rule;
     bool quit_mode = 0;
     void keyPressEvent( QKeyEvent *event );
 };
