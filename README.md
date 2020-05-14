@@ -13,7 +13,9 @@ QUIT: Quit the game.
 SHOW RECORD: View statistics.  
 SECRET BUTTON: Hidden beneath our naked eyes.
 ### Real time timer and step counter
-They are at the botttom of the UI while playing.
+They are at the botttom of the UI while playing.  
+Unfortunately, real time timer is bugged.  
+I need to optimize my program to get it back working.  
 ### Saved game
 View all statistics at main menu.
 ## Bonus
