@@ -22,6 +22,8 @@
 #include <QTextStream>
 
 #include <QTimer>
+
+#include <fstream>
 namespace Ui {
 class MainWindow;
 }
