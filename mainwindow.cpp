@@ -209,7 +209,8 @@ void MainWindow::wrong_input() {
 void MainWindow::load_saved_game(){
     in_saved_game_menu = 1;
     hide_menu();
-    QFile save_loader(":/SavedGame.txt");
+
+    QFile save_loader("../2020-pd2-sokoban/SavedGame/SavedGame.txt");
     if(!save_loader.open(QIODevice::ReadOnly)) {
         QMessageBox::information(this, tr("Unable to open file"), save_loader.errorString());
     }
@@ -221,6 +222,7 @@ void MainWindow::load_saved_game(){
             in >> saved_game_record[i][j];
         i++;
     }
+
     save_loader.close();
     Saved_game_menu();
 }
@@ -708,15 +710,15 @@ bool MainWindow::checkWin() {
 }
 
 void MainWindow::save_data(){
-    QFile save_writer(":/SavedGame.txt");
+    QFile save_writer("../2020-pd2-sokoban/SavedGame/SavedGame.txt");
     if(!save_writer.open(QIODevice::WriteOnly)) {
         QMessageBox::information(this, tr("Unable to open file"), save_writer.errorString());
     }
     QTextStream out(&save_writer);
-    out.setIntegerBase(10);
     out << back_end_timer << " " << steps << endl;
     save_writer.close();
 }
+
 void MainWindow::mapGen(short int arrdata[10][10]) {
     idx_ground = 0;
     idx_wall = 0;
