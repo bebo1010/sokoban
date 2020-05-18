@@ -141,7 +141,7 @@ void MainWindow::secret_menu() {
     Secret_menu_rule = new QLabel(this);
     Secret_menu_rule -> setGeometry(10, 100, 500, 200);
     Secret_menu_rule -> setFont(QFont("Courier New", 14));
-    Secret_menu_rule -> setText("Input keys from keyboard.\nThe keys will be checked when 10 keys\n are pressed. Allowed keys are: numbers ,\n english characters(uppercase or lowercase\n don't matter) , and arrow keys.\n");
+    Secret_menu_rule -> setText("Input keys from keyboard.\nThe keys will be checked when 10 keys\n are pressed. Allowed keys are: \n english characters(uppercase or lowercase\n don't matter) , and arrow keys.\n");
     Secret_menu_rule -> show();
     Secret_menu_input = new QLabel(this);
     Secret_menu_input -> setGeometry(170, 50, 160, 30);
@@ -211,18 +211,29 @@ void MainWindow::load_saved_game(){
     hide_menu();
 
     QFile save_loader("../2020-pd2-sokoban/SavedGame/SavedGame.txt");
-    if(!save_loader.open(QIODevice::ReadOnly)) {
+    if(!save_loader.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QMessageBox::information(this, tr("Unable to open file"), save_loader.errorString());
     }
     QTextStream in(&save_loader);
     in.setIntegerBase(10);
-    int i = 0;
-    while(!(save_loader.atEnd()) && i < 10){
+    /*int i = 0;
+    while((!save_loader.atEnd()) && i < 10){
         for(int j = 0 ; j < 2 ; j++)
             in >> saved_game_record[i][j];
+        qDebug() << saved_game_record[i][0] << " " << saved_game_record[i][1];
         i++;
-    }
-
+    }*/
+    QString data;
+    int *read_ptr = &saved_game_record[0][0];
+    int read_count = 0;
+    do{
+        data = in.readLine();
+        bool read_test;
+        *(read_ptr + read_count) = data.toInt(&read_test);
+        if(read_test){
+            read_count++;
+        }
+    }while(!data.isNull());
     save_loader.close();
     Saved_game_menu();
 }
@@ -682,7 +693,6 @@ void MainWindow::clear_map() {
 }
 
 bool MainWindow::checkWin() {
-    timer->stop();
     int win=0;
     for(int i = 0; i<idx_target; i++) {
         for(int j = 0; j<idx_box; j++) {
@@ -692,11 +702,12 @@ bool MainWindow::checkWin() {
         }
     }
     if(win>=idx_target) {
+        timer->stop();
         QMessageBox msg;
         QString steps_str = QString::fromStdString(std::to_string(steps));
         QString timer_str = QString::fromStdString(std::to_string(back_end_timer));
         msg.setStyleSheet("QLabel{min-width: 200px;}");
-        msg.setText("you win!!!!!!\nUsed Steps: "+steps_str+"\nUsed Time: "+timer_str+"\n");
+        msg.setText("you win!!!!!!\nUsed Time: "+timer_str+"\nUsed Steps: "+steps_str+"\n");
         msg.exec();
         msg.close();
         save_data();
@@ -705,17 +716,16 @@ bool MainWindow::checkWin() {
         map_preprocessor();
         return true;
     }
-    timer->start();
     return false;
 }
 
 void MainWindow::save_data(){
     QFile save_writer("../2020-pd2-sokoban/SavedGame/SavedGame.txt");
-    if(!save_writer.open(QIODevice::WriteOnly)) {
+    if(!save_writer.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QMessageBox::information(this, tr("Unable to open file"), save_writer.errorString());
     }
     QTextStream out(&save_writer);
-    out << back_end_timer << " " << steps << endl;
+    out << back_end_timer << endl << steps << endl;
     save_writer.close();
 }
 
@@ -886,7 +896,7 @@ void MainWindow::map_preprocessor() {
 
 void MainWindow::load_map() {
     QFile level_loader(loaded_level);
-    if(!level_loader.open(QIODevice::ReadOnly)) {
+    if(!level_loader.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QMessageBox::information(this, tr("Unable to open file"), level_loader.errorString());
     }
     QTextStream in(&level_loader);
